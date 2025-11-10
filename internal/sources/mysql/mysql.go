@@ -40,7 +40,11 @@ func init() {
 }
 
 func newConfig(ctx context.Context, name string, decoder *yaml.Decoder) (sources.SourceConfig, error) {
-	actual := Config{Name: name}
+	actual := Config{
+        Name: name,
+        Host: "localhost", // Default host, used if not specified in the YAML.
+        Port: "3306", // Default port, used if not specified in the YAML.
+    }
 	if err := decoder.DecodeContext(ctx, &actual); err != nil {
 		return nil, err
 	}
@@ -50,8 +54,8 @@ func newConfig(ctx context.Context, name string, decoder *yaml.Decoder) (sources
 type Config struct {
 	Name         string            `yaml:"name" validate:"required"`
 	Kind         string            `yaml:"kind" validate:"required"`
-	Host         string            `yaml:"host" validate:"required"`
-	Port         string            `yaml:"port" validate:"required"`
+	Host         string            `yaml:"host" `
+	Port         string            `yaml:"port" `
 	User         string            `yaml:"user" validate:"required"`
 	Password     string            `yaml:"password" validate:"required"`
 	Database     string            `yaml:"database" validate:"required"`
