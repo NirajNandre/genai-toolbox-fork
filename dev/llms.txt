@@ -69,6 +69,7 @@ List of reference documentation for resources in Toolbox.
   - [Elasticsearch](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/elasticsearch/): Elasticsearch is a distributed, free and open search and analytics engine  for all types of data, including textual, numerical, geospatial, structured,  and unstructured.
   - [Firebird](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/firebird/): Firebird is a powerful, cross-platform, and open-source relational database.
   - [Firestore](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/firestore/): Firestore is a NoSQL document database built for automatic scaling, high performance, and ease of application development. It's a fully managed, serverless database that supports mobile, web, and server development.
+  - [Gemini Data Analytics](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/cloud-gda/): A "cloud-gemini-data-analytics" source provides a client for the Gemini Data Analytics API.
   - [HTTP](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/http/): The HTTP source enables the Toolbox to retrieve data from a remote server using HTTP requests.
   - [Looker](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/looker/): Looker is a business intelligence tool that also provides a semantic layer.
   - [MariaDB](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/mariadb/): MariaDB is an open-source relational database compatible with MySQL.
@@ -89,6 +90,8 @@ List of reference documentation for resources in Toolbox.
   - [Trino](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/trino/): Trino is a distributed SQL query engine for big data analytics.
   - [Valkey](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/valkey/): Valkey is an open-source, in-memory data structure store, forked from Redis.
   - [YugabyteDB](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/sources/yugabytedb/): YugabyteDB is a high-performance, distributed SQL database. 
+- [EmbeddingModels](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/embeddingmodels/): EmbeddingModels represent services that transform text into vector embeddings for semantic search.
+  - [Gemini Embedding](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/embeddingmodels/gemini/): Use Google's Gemini models to generate high-performance text embeddings for vector databases.
 - [Tools](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/): Tools define actions an agent can take -- such as reading and writing to a source.
   - [AlloyDB AI NL](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/alloydbainl/): AlloyDB AI NL Tool.
   - [AlloyDB for PostgreSQL](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/alloydb/): Tools for AlloyDB for PostgreSQL.
@@ -106,6 +109,7 @@ List of reference documentation for resources in Toolbox.
   - [Elasticsearch](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/elasticsearch/): Tools that work with Elasticsearch Sources.
   - [Firebird](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/firebird/): Tools that work with Firebird Sources.
   - [Firestore](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/firestore/): Tools that work with Firestore Sources.
+  - [Gemini Data Analytics](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/cloudgda/): Tools for Gemini Data Analytics.
   - [HTTP](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/http/): Tools that work with HTTP Sources.
   - [Looker](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/looker/): Tools that work with Looker Sources.
   - [MindsDB Tools](https://NirajNandre.github.io/genai-toolbox-fork/dev/resources/tools/mindsdb/): MindsDB tools that enable SQL queries across hundreds of datasources and ML models.
