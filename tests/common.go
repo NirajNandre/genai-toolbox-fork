@@ -973,7 +973,6 @@ func TestCloudSQLMySQL_IPTypeParsingFromYAML(t *testing.T) {
 
 // Finds and drops all tables in a postgres database.
 func CleanupPostgresTables(t *testing.T, ctx context.Context, pool *pgxpool.Pool, uniqueID string) {
-	t.Logf("INTEGRATION CLEANUP: Identifying resources for uniqueID: %s", uniqueID)
 
 	query := `
 		SELECT table_name FROM information_schema.tables
