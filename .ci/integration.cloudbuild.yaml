@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Triggering integration tests for Issue 2463
-
 steps:
   - id: "install-dependencies"
     name: golang:1
