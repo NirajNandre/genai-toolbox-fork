@@ -1357,12 +1357,12 @@ func RunPostgresListViewsTest(t *testing.T, ctx context.Context, pool *pgxpool.P
 	}
 }
 
-func RunPostgresListSchemasTest(t *testing.T, ctx context.Context, pool *pgxpool.Pool) {
-	schemaName := "test_schema_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+func RunPostgresListSchemasTest(t *testing.T, ctx context.Context, pool *pgxpool.Pool, owner string, uniqueID string) {
+	schemaName := "test_schema_" + uniqueID
 	cleanup := setupPostgresSchemas(t, ctx, pool, schemaName)
 	defer cleanup()
 
-	wantSchema := map[string]any{"functions": float64(0), "grants": map[string]any{}, "owner": "postgres", "schema_name": schemaName, "tables": float64(0), "views": float64(0)}
+	wantSchema := map[string]any{"functions": float64(0), "grants": map[string]any{}, "owner": owner, "schema_name": schemaName, "tables": float64(0), "views": float64(0)}
 
 	invokeTcs := []struct {
 		name           string
@@ -1379,7 +1379,7 @@ func RunPostgresListSchemasTest(t *testing.T, ctx context.Context, pool *pgxpool
 		},
 		{
 			name:           "invoke list_schemas with owner name",
-			requestBody:    bytes.NewBuffer([]byte(fmt.Sprintf(`{"owner": "%s"}`, "postgres"))),
+			requestBody:    bytes.NewBuffer([]byte(fmt.Sprintf(`{"owner": "%s"}`, owner))),
 			wantStatusCode: http.StatusOK,
 			want:           []map[string]any{wantSchema},
 			compareSubset:  true,
