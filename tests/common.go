@@ -24,12 +24,14 @@ import (
 	"strings"
 	"testing"
 
+	bigqueryapi "cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/genai-toolbox/internal/server"
 	"github.com/googleapis/genai-toolbox/internal/sources/cloudsqlmysql"
 	"github.com/googleapis/genai-toolbox/internal/testutils"
 	"github.com/googleapis/genai-toolbox/internal/util/parameters"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/api/iterator"
 )
 
 // GetToolsConfig returns a mock tools config file
@@ -1070,4 +1072,28 @@ func CleanupMSSQLTables(t *testing.T, ctx context.Context, pool *sql.DB) {
 		t.Fatalf("Failed to drop all MSSQL tables: %v", err)
 	}
 
+}
+
+func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigqueryapi.Client, uniqueID string) {
+	it := client.Datasets(ctx)
+	for {
+		ds, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("INTEGRATION CLEANUP: Failed to iterate datasets: %v", err)
+			return
+		}
+
+		// Check if the dataset ID contains our uniqueID suffix
+		if strings.Contains(ds.DatasetID, uniqueID) {
+			t.Logf("INTEGRATION CLEANUP: Deleting dataset %s and its contents", ds.DatasetID)
+			if err := ds.DeleteWithContents(ctx); err != nil {
+				t.Errorf("INTEGRATION CLEANUP: Failed to delete dataset %s: %v", ds.DatasetID, err)
+			} else {
+				t.Logf("INTEGRATION CLEANUP SUCCESS: Wiped dataset %s", ds.DatasetID)
+			}
+		}
+	}
 }
