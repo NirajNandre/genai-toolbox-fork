@@ -29,7 +29,7 @@ import (
 	"testing"
 	"time"
 
-	// bigqueryapi "cloud.google.com/go/bigquery"
+	bigqueryapi "cloud.google.com/go/bigquery"
 	"github.com/google/uuid"
 	"github.com/googleapis/genai-toolbox/internal/sources"
 	"github.com/googleapis/genai-toolbox/internal/testutils"
