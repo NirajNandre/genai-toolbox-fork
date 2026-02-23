@@ -75,6 +75,9 @@ func initBigQueryConnection(project string) (*bigqueryapi.Client, error) {
 
 func TestBigQueryToolEndpoints(t *testing.T) {
 	sourceConfig := getBigQueryVars(t)
+	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
+	t.Logf("Starting test with uniqueID: %s", uniqueID)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Minute)
 	defer cancel()
 
@@ -85,9 +88,14 @@ func TestBigQueryToolEndpoints(t *testing.T) {
 		t.Fatalf("unable to create Cloud SQL connection pool: %s", err)
 	}
 
+	// global cleanup for this test run
+	t.Cleanup(func() {
+		tests.CleanupBigQueryDatasets(t, context.Background(), client, uniqueID)
+	})
+
 	// create table name with UUID
-	datasetName := fmt.Sprintf("temp_toolbox_test_%s", strings.ReplaceAll(uuid.New().String(), "-", ""))
-	tableName := fmt.Sprintf("param_table_%s", strings.ReplaceAll(uuid.New().String(), "-", ""))
+	datasetName := fmt.Sprintf("temp_toolbox_test_%s", uniqueID)
+	tableName := fmt.Sprintf("param_table_%s", uniqueID)
 	tableNameParam := fmt.Sprintf("`%s.%s.%s`",
 		BigqueryProject,
 		datasetName,
@@ -96,28 +104,28 @@ func TestBigQueryToolEndpoints(t *testing.T) {
 	tableNameAuth := fmt.Sprintf("`%s.%s.auth_table_%s`",
 		BigqueryProject,
 		datasetName,
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
+		uniqueID,
 	)
 	tableNameTemplateParam := fmt.Sprintf("`%s.%s.template_param_table_%s`",
 		BigqueryProject,
 		datasetName,
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
+		uniqueID,
 	)
 	tableNameDataType := fmt.Sprintf("`%s.%s.datatype_table_%s`",
 		BigqueryProject,
 		datasetName,
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
+		uniqueID,
 	)
 	tableNameForecast := fmt.Sprintf("`%s.%s.forecast_table_%s`",
 		BigqueryProject,
 		datasetName,
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
+		uniqueID,
 	)
 
 	tableNameAnalyzeContribution := fmt.Sprintf("`%s.%s.analyze_contribution_table_%s`",
 		BigqueryProject,
 		datasetName,
-		strings.ReplaceAll(uuid.New().String(), "-", ""),
+		uniqueID,
 	)
 
 	// set up data for param tool
@@ -205,6 +213,8 @@ func TestBigQueryToolEndpoints(t *testing.T) {
 }
 
 func TestBigQueryToolWithDatasetRestriction(t *testing.T) {
+	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
+	t.Logf("Starting restriction test with uniqueID: %s", uniqueID)
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Minute)
 	defer cancel()
 
@@ -213,11 +223,14 @@ func TestBigQueryToolWithDatasetRestriction(t *testing.T) {
 		t.Fatalf("unable to create BigQuery client: %s", err)
 	}
 
-	// Create two datasets, one allowed, one not.
-	baseName := strings.ReplaceAll(uuid.New().String(), "-", "")
-	allowedDatasetName1 := fmt.Sprintf("allowed_dataset_1_%s", baseName)
-	allowedDatasetName2 := fmt.Sprintf("allowed_dataset_2_%s", baseName)
-	disallowedDatasetName := fmt.Sprintf("disallowed_dataset_%s", baseName)
+	// global cleanup for this test run
+	t.Cleanup(func() {
+		tests.CleanupBigQueryDatasets(t, context.Background(), client, uniqueID)
+	})
+
+	allowedDatasetName1 := fmt.Sprintf("allowed_dataset_1_%s", uniqueID)
+	allowedDatasetName2 := fmt.Sprintf("allowed_dataset_2_%s", uniqueID)
+	disallowedDatasetName := fmt.Sprintf("disallowed_dataset_%s", uniqueID)
 	allowedTableName1 := "allowed_table_1"
 	allowedTableName2 := "allowed_table_2"
 	disallowedTableName := "disallowed_table"
