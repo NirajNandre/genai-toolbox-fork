@@ -11,13 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@llamaindex/core": "0.6.22",
     "@llamaindex/google": "^0.4.0",
     "@llamaindex/workflow": "^1.1.24",
     "@toolbox-sdk/core": "^0.2.0",
     "llamaindex": "^0.12.1",
     "uuid": "^10.0.0"
-  },
-  "overrides": {
-    "@llamaindex/core": "0.6.22"
   }
 }
