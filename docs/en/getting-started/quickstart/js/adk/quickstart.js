@@ -47,7 +47,7 @@ async function runPrompt(runner, userId, sessionId, prompt) {
   const stream = runner.runAsync({ userId, sessionId, newMessage: content });
   const responses = [];
   for await (const response of stream) {
-      responses.push(response);
+    responses.push(response);
   }
   const accumulatedResponse = responses
     .flatMap((e) => e.content?.parts?.map((p) => p.text) ?? [])
