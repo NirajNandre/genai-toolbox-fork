@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "quickstart.js",
-  "type" : "module",
+  "type": "module",
   "scripts": {
     "test": "node --test"
   },
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@genkit-ai/googleai": "^1.18.0",
-    "@toolbox-sdk/core": "^0.1.5",
-    "genkit": "^1.18.0"
+    "@genkit-ai/googleai": "^1.20.0",
+    "@toolbox-sdk/core": "^0.2.0",
+    "genkit": "^1.20.0"
   }
 }
