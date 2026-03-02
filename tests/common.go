@@ -976,17 +976,24 @@ func CleanupPostgresTables(t *testing.T, ctx context.Context, pool *pgxpool.Pool
 
 	schemaPattern := "%" + uniqueID + "%"
 	schemaQuery := `SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE $1;`
-	
+
 	sRows, err := pool.Query(ctx, schemaQuery, schemaPattern)
-	if err == nil {
+	if err != nil {
+		t.Errorf("Failed to query for schemas to clean up for uniqueID %s: %v", uniqueID, err)
+	} else {
+		defer sRows.Close()
 		var schemasToDrop []string
 		for sRows.Next() {
 			var sName string
-			if err := sRows.Scan(&sName); err == nil {
-				schemasToDrop = append(schemasToDrop, fmt.Sprintf("%q", sName))
+			if err := sRows.Scan(&sName); err != nil {
+				t.Errorf("Failed to scan schema name for cleanup: %v", err)
+				continue
 			}
+			schemasToDrop = append(schemasToDrop, fmt.Sprintf("%q", sName))
 		}
-		sRows.Close()
+		if err := sRows.Err(); err != nil {
+			t.Errorf("Error iterating schema rows for cleanup: %v", err)
+		}
 
 		if len(schemasToDrop) > 0 {
 			t.Logf("INTEGRATION CLEANUP: Dropping isolated schemas: %v", schemasToDrop)
@@ -996,7 +1003,7 @@ func CleanupPostgresTables(t *testing.T, ctx context.Context, pool *pgxpool.Pool
 			}
 		}
 	}
-	
+
 	tableQuery := `
 		SELECT table_name FROM information_schema.tables
 		WHERE table_schema = 'public' 
