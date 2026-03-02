@@ -974,11 +974,34 @@ func TestCloudSQLMySQL_IPTypeParsingFromYAML(t *testing.T) {
 // Finds and drops all tables in a postgres database.
 func CleanupPostgresTables(t *testing.T, ctx context.Context, pool *pgxpool.Pool, uniqueID string) {
 
-	query := `
+	schemaPattern := "%" + uniqueID + "%"
+	schemaQuery := `SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE $1;`
+	
+	sRows, err := pool.Query(ctx, schemaQuery, schemaPattern)
+	if err == nil {
+		var schemasToDrop []string
+		for sRows.Next() {
+			var sName string
+			if err := sRows.Scan(&sName); err == nil {
+				schemasToDrop = append(schemasToDrop, fmt.Sprintf("%q", sName))
+			}
+		}
+		sRows.Close()
+
+		if len(schemasToDrop) > 0 {
+			t.Logf("INTEGRATION CLEANUP: Dropping isolated schemas: %v", schemasToDrop)
+			dropSchemaQuery := fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE;", strings.Join(schemasToDrop, ", "))
+			if _, err := pool.Exec(ctx, dropSchemaQuery); err != nil {
+				t.Errorf("Failed to drop schemas for uniqueID %s: %v", uniqueID, err)
+			}
+		}
+	}
+	
+	tableQuery := `
 		SELECT table_name FROM information_schema.tables
 		WHERE table_schema = 'public' 
 		AND table_name LIKE $1;`
-	rows, err := pool.Query(ctx, query, "%\\_"+uniqueID)
+	rows, err := pool.Query(ctx, tableQuery, "%\\_"+uniqueID)
 	if err != nil {
 		t.Fatalf("Failed to query for tables for uniqueID %s in 'public' schema: %v", uniqueID, err)
 	}

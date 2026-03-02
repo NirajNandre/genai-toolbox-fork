@@ -93,6 +93,13 @@ func TestPostgres(t *testing.T) {
 		t.Fatalf("unable to create postgres connection pool: %s", err)
 	}
 
+	// Detect the actual user that will own the schemas
+	var actualUser string
+	err = pool.QueryRow(ctx, "SELECT CURRENT_USER;").Scan(&actualUser)
+	if err != nil {
+		t.Fatalf("unable to get current database user: %s", err)
+	}
+
 	// Generate a unique ID
 	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
 
@@ -156,9 +163,9 @@ func TestPostgres(t *testing.T) {
 	tests.RunToolInvokeWithTemplateParameters(t, tableNameTemplateParam)
 
 	// Run Postgres prebuilt tool tests
-	tests.RunPostgresListTablesTest(t, tableNameParam, tableNameAuth, PostgresUser)
+	tests.RunPostgresListTablesTest(t, tableNameParam, tableNameAuth, actualUser)
 	tests.RunPostgresListViewsTest(t, ctx, pool)
-	tests.RunPostgresListSchemasTest(t, ctx, pool, PostgresUser, uniqueID)
+	tests.RunPostgresListSchemasTest(t, ctx, pool, actualUser, uniqueID)
 	tests.RunPostgresListActiveQueriesTest(t, ctx, pool)
 	tests.RunPostgresListAvailableExtensionsTest(t)
 	tests.RunPostgresListInstalledExtensionsTest(t)
