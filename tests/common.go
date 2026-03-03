@@ -1104,14 +1104,16 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 		SQL:    tableQuery,
 		Params: map[string]any{"pattern": pattern},
 	})
-	_ = tIter.Do(func(row *spanner.Row) error {
+	if err := tIter.Do(func(row *spanner.Row) error {
 		var name string
 		if err := row.Scan(&name); err == nil {
 			// Graphs depend on tables, so we add these AFTER graphs in the DDL list
 			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP TABLE %s", name))
 		}
 		return nil
-	})
+	}); err != nil {
+		t.Errorf("DEBUG: Spanner cleanup failed while iterating over tables: %v", err)
+	}
 
 	//Execute all drops in a single batch to minimize Spanner Admin API latency
 	if len(ddlStatements) > 0 {
