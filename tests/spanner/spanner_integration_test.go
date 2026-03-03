@@ -102,10 +102,19 @@ func TestSpannerToolEndpoints(t *testing.T) {
 		t.Fatalf("unable to create Spanner client: %s", err)
 	}
 
+	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
+	dbString := fmt.Sprintf("projects/%s/instances/%s/databases/%s", SpannerProject, SpannerInstance, SpannerDatabase)
+
+	t.Cleanup(func() {
+		CleanupSpannerResources(t, context.Background(), adminClient, dataClient, dbString, uniqueID)
+	})
+
+	t.Logf("DEBUG: Starting test run with isolated ID: %s", uniqueID)
+
 	// create table name with UUID
-	tableNameParam := "param_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
-	tableNameAuth := "auth_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
-	tableNameTemplateParam := "template_param_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+	tableNameParam := "param_table_" + uniqueID
+	tableNameAuth := "auth_table_" + uniqueID
+	tableNameTemplateParam := "template_param_table_" + uniqueID
 
 	// set up data for param tool
 	createParamTableStmt, insertParamTableStmt, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, paramTestParams := getSpannerParamToolInfo(tableNameParam)
@@ -129,12 +138,12 @@ func TestSpannerToolEndpoints(t *testing.T) {
 	defer teardownTableTmpl(t)
 
 	// set up for graph tool
-	nodeTableName := "node_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+	nodeTableName := "node_table_" + uniqueID
 	createNodeStatementTmpl := fmt.Sprintf("CREATE TABLE %s (id INT64 NOT NULL) PRIMARY KEY (id)", nodeTableName)
 	teardownNodeTableTmpl := setupSpannerTable(t, ctx, adminClient, dataClient, createNodeStatementTmpl, "", nodeTableName, dbString, nil)
 	defer teardownNodeTableTmpl(t)
 
-	edgeTableName := "edge_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+	edgeTableName := "edge_table_" + uniqueID
 	createEdgeStatementTmpl := fmt.Sprintf(`
 	CREATE TABLE %[1]s (
 		id INT64 NOT NULL,
@@ -146,7 +155,7 @@ func TestSpannerToolEndpoints(t *testing.T) {
 	teardownEdgeTableTmpl := setupSpannerTable(t, ctx, adminClient, dataClient, createEdgeStatementTmpl, "", edgeTableName, dbString, nil)
 	defer teardownEdgeTableTmpl(t)
 
-	graphName := "graph_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+	graphName := "graph_" + uniqueID
 	createGraphStmt := fmt.Sprintf(`
 	CREATE PROPERTY GRAPH %[3]s
 		NODE TABLES (
