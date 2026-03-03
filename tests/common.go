@@ -1088,13 +1088,15 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 		SQL:    graphQuery,
 		Params: map[string]any{"pattern": pattern},
 	})
-	_ = gIter.Do(func(row *spanner.Row) error {
+	if err := gIter.Do(func(row *spanner.Row) error {
 		var name string
 		if err := row.Scan(&name); err == nil {
 			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP PROPERTY GRAPH %s", name))
 		}
 		return nil
-	})
+	}); err != nil {
+		t.Errorf("DEBUG: Spanner cleanup failed while iterating over graphs: %v", err)
+	}
 
 	//Identify Tables
 	tableQuery := `SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '' AND table_name LIKE @pattern`
