@@ -27,7 +27,6 @@ import (
 	"cloud.google.com/go/spanner"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
-	"github.com/googleapis/genai-toolbox/tests"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/genai-toolbox/internal/server"
 	"github.com/googleapis/genai-toolbox/internal/sources/cloudsqlmysql"
@@ -1090,7 +1089,7 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 	})
 	if err := gIter.Do(func(row *spanner.Row) error {
 		var name string
-		if err := row.Scan(&name); err == nil {
+		if err := row.Column(0, &name); err == nil {
 			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP PROPERTY GRAPH %s", name))
 		}
 		return nil
@@ -1106,8 +1105,7 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 	})
 	if err := tIter.Do(func(row *spanner.Row) error {
 		var name string
-		if err := row.Scan(&name); err == nil {
-			// Graphs depend on tables, so we add these AFTER graphs in the DDL list
+		if err := row.Column(0, &name); err == nil {
 			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP TABLE %s", name))
 		}
 		return nil
