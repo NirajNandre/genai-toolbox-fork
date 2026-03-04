@@ -106,7 +106,7 @@ func TestSpannerToolEndpoints(t *testing.T) {
 	dbString := fmt.Sprintf("projects/%s/instances/%s/databases/%s", SpannerProject, SpannerInstance, SpannerDatabase)
 
 	t.Cleanup(func() {
-		CleanupSpannerResources(t, context.Background(), adminClient, dataClient, dbString, uniqueID)
+		tests.CleanupSpannerResources(t, context.Background(), adminClient, dataClient, dbString, uniqueID)
 	})
 
 	t.Logf("DEBUG: Starting test run with isolated ID: %s", uniqueID)
@@ -118,30 +118,21 @@ func TestSpannerToolEndpoints(t *testing.T) {
 
 	// set up data for param tool
 	createParamTableStmt, insertParamTableStmt, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, paramTestParams := getSpannerParamToolInfo(tableNameParam)
-	dbString := fmt.Sprintf(
-		"projects/%s/instances/%s/databases/%s",
-		SpannerProject,
-		SpannerInstance,
-		SpannerDatabase,
-	)
-	teardownTable1 := setupSpannerTable(t, ctx, adminClient, dataClient, createParamTableStmt, insertParamTableStmt, tableNameParam, dbString, paramTestParams)
-	defer teardownTable1(t)
+
+	_ = setupSpannerTable(t, ctx, adminClient, dataClient, createParamTableStmt, insertParamTableStmt, tableNameParam, dbString, paramTestParams)
 
 	// set up data for auth tool
 	createAuthTableStmt, insertAuthTableStmt, authToolStmt, authTestParams := getSpannerAuthToolInfo(tableNameAuth)
-	teardownTable2 := setupSpannerTable(t, ctx, adminClient, dataClient, createAuthTableStmt, insertAuthTableStmt, tableNameAuth, dbString, authTestParams)
-	defer teardownTable2(t)
+	_ = setupSpannerTable(t, ctx, adminClient, dataClient, createAuthTableStmt, insertAuthTableStmt, tableNameAuth, dbString, authTestParams)
 
 	// set up data for template param tool
 	createStatementTmpl := fmt.Sprintf("CREATE TABLE %s (id INT64, name STRING(MAX), age INT64) PRIMARY KEY (id)", tableNameTemplateParam)
-	teardownTableTmpl := setupSpannerTable(t, ctx, adminClient, dataClient, createStatementTmpl, "", tableNameTemplateParam, dbString, nil)
-	defer teardownTableTmpl(t)
+	_ = setupSpannerTable(t, ctx, adminClient, dataClient, createStatementTmpl, "", tableNameTemplateParam, dbString, nil)
 
 	// set up for graph tool
 	nodeTableName := "node_table_" + uniqueID
 	createNodeStatementTmpl := fmt.Sprintf("CREATE TABLE %s (id INT64 NOT NULL) PRIMARY KEY (id)", nodeTableName)
-	teardownNodeTableTmpl := setupSpannerTable(t, ctx, adminClient, dataClient, createNodeStatementTmpl, "", nodeTableName, dbString, nil)
-	defer teardownNodeTableTmpl(t)
+	_ = setupSpannerTable(t, ctx, adminClient, dataClient, createNodeStatementTmpl, "", nodeTableName, dbString, nil)
 
 	edgeTableName := "edge_table_" + uniqueID
 	createEdgeStatementTmpl := fmt.Sprintf(`
@@ -152,8 +143,7 @@ func TestSpannerToolEndpoints(t *testing.T) {
 	) PRIMARY KEY (id, target_id),
 	 INTERLEAVE IN PARENT %[2]s ON DELETE CASCADE
 	`, edgeTableName, nodeTableName)
-	teardownEdgeTableTmpl := setupSpannerTable(t, ctx, adminClient, dataClient, createEdgeStatementTmpl, "", edgeTableName, dbString, nil)
-	defer teardownEdgeTableTmpl(t)
+	_ = setupSpannerTable(t, ctx, adminClient, dataClient, createEdgeStatementTmpl, "", edgeTableName, dbString, nil)
 
 	graphName := "graph_" + uniqueID
 	createGraphStmt := fmt.Sprintf(`
@@ -168,8 +158,7 @@ func TestSpannerToolEndpoints(t *testing.T) {
 				LABEL EDGE
 		)
 	`, nodeTableName, edgeTableName, graphName)
-	teardownGraph := setupSpannerGraph(t, ctx, adminClient, createGraphStmt, graphName, dbString)
-	defer teardownGraph(t)
+	_ = setupSpannerGraph(t, ctx, adminClient, createGraphStmt, graphName, dbString)
 
 	// Write config into a file and pass it to command
 	toolsFile := tests.GetToolsConfig(sourceConfig, SpannerToolType, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, authToolStmt)
