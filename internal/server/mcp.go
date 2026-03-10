@@ -61,7 +61,9 @@ func (m *sseManager) get(id string) (*sseSession, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	session, ok := m.sseSessions[id]
-	session.lastActive = time.Now()
+	if ok {
+		session.lastActive = time.Now()
+	}
 	return session, ok
 }
 
@@ -193,31 +195,37 @@ func (s *stdioSession) readInputStream(ctx context.Context) error {
 			}
 			return err
 		}
-		// This ensures the transport span becomes a child of the client span
-		msgCtx := extractTraceContext(ctx, []byte(line))
 
-		// Create span for STDIO transport
-		msgCtx, span := s.server.instrumentation.Tracer.Start(msgCtx, "toolbox/server/mcp/stdio",
-			trace.WithSpanKind(trace.SpanKindServer),
-		)
-		defer span.End()
+		if err := func() error {
+			// This ensures the transport span becomes a child of the client span
+			msgCtx := extractTraceContext(ctx, []byte(line))
 
-		v, res, err := processMcpMessage(msgCtx, []byte(line), s.server, s.protocol, "", "", nil, "")
-		if err != nil {
-			// errors during the processing of message will generate a valid MCP Error response.
-			// server can continue to run.
-			s.server.logger.ErrorContext(msgCtx, err.Error())
-			span.SetStatus(codes.Error, err.Error())
-		}
+			// Create span for STDIO transport
+			msgCtx, span := s.server.instrumentation.Tracer.Start(msgCtx, "toolbox/server/mcp/stdio",
+				trace.WithSpanKind(trace.SpanKindServer),
+			)
+			defer span.End()
 
-		if v != "" {
-			s.protocol = v
-		}
-		// no responses for notifications
-		if res != nil {
-			if err = s.write(msgCtx, res); err != nil {
-				return err
+			v, res, err := processMcpMessage(msgCtx, []byte(line), s.server, s.protocol, "", "", nil, "")
+			if err != nil {
+				// errors during the processing of message will generate a valid MCP Error response.
+				// server can continue to run.
+				s.server.logger.ErrorContext(msgCtx, err.Error())
+				span.SetStatus(codes.Error, err.Error())
 			}
+
+			if v != "" {
+				s.protocol = v
+			}
+			// no responses for notifications
+			if res != nil {
+				if err = s.write(msgCtx, res); err != nil {
+					return err
+				}
+			}
+			return nil
+		}(); err != nil {
+			return err
 		}
 	}
 }
@@ -309,8 +317,8 @@ func sseHandler(s *Server, w http.ResponseWriter, r *http.Request) {
 	sessionId := uuid.New().String()
 	toolsetName := chi.URLParam(r, "toolsetName")
 	s.logger.DebugContext(ctx, fmt.Sprintf("toolset name: %s", toolsetName))
-	span.SetAttributes(attribute.String("session_id", sessionId))
-	span.SetAttributes(attribute.String("toolset_name", toolsetName))
+	span.SetAttributes(attribute.String("mcp.session.id", sessionId))
+	span.SetAttributes(attribute.String("toolset.name", toolsetName))
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -459,7 +467,7 @@ func httpHandler(s *Server, w http.ResponseWriter, r *http.Request) {
 	toolsetName := chi.URLParam(r, "toolsetName")
 	promptsetName := chi.URLParam(r, "promptsetName")
 	s.logger.DebugContext(ctx, fmt.Sprintf("toolset name: %s", toolsetName))
-	span.SetAttributes(attribute.String("toolset_name", toolsetName))
+	span.SetAttributes(attribute.String("toolset.name", toolsetName))
 
 	defer func() {
 		if err != nil {
