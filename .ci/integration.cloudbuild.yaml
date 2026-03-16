@@ -94,17 +94,17 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudsqlpg" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud SQL Postgres integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud SQL Postgres" \
-            cloudsqlpg \
-            postgressql \
-            postgresexecutesql
-        else
+        if [ "$_DB_SHARD" != "cloudsqlpg" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud SQL Postgres tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud SQL Postgres integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud SQL Postgres" \
+          cloudsqlpg \
+          postgressql \
+          postgresexecutesql
 
   - id: "alloydb"
     name: golang:1
@@ -123,16 +123,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "alloydb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: AlloyDB integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "AlloyDB" \
-            alloydb \
-            alloydb
-        else
+        if [ "$_DB_SHARD" != "alloydb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: AlloyDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: AlloyDB integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "AlloyDB" \
+          alloydb \
+          alloydb
 
   - id: "alloydb-pg"
     name: golang:1
@@ -153,17 +153,17 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "alloydbpg" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: AlloyDB Postgres integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "AlloyDB Postgres" \
-            alloydbpg \
-            postgressql \
-            postgresexecutesql
-        else
+        if [ "$_DB_SHARD" != "alloydbpg" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: AlloyDB Postgres tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: AlloyDB Postgres integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "AlloyDB Postgres" \
+          alloydbpg \
+          postgressql \
+          postgresexecutesql
 
   - id: "alloydb-ai-nl"
     name: golang:1
@@ -184,16 +184,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "alloydbainl" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: AlloyDB AI NL integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "AlloyDB AI NL" \
-            alloydbainl \
-            alloydbainl
-        else
+        if [ "$_DB_SHARD" != "alloydbainl" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: AlloyDB AI NL tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: AlloyDB AI NL integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "AlloyDB AI NL" \
+          alloydbainl \
+          alloydbainl
 
   - id: "alloydb-omni"
     name: golang:1
@@ -207,16 +207,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "alloydbomni" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: AlloyDB Omni integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "AlloyDB Omni" \
-            alloydbomni \
-            postgres
-        else
+        if [ "$_DB_SHARD" != "alloydbomni" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: AlloyDB Omni tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: AlloyDB Omni integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "AlloyDB Omni" \
+          alloydbomni \
+          postgres
 
   - id: "bigtable"
     name: golang:1
@@ -234,16 +234,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "bigtable" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Bigtable integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Bigtable" \
-            bigtable \
-            bigtable
-        else
+        if [ "$_DB_SHARD" != "bigtable" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Bigtable tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Bigtable integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Bigtable" \
+          bigtable \
+          bigtable
 
   - id: "bigquery"
     name: golang:1
@@ -260,16 +260,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "bigquery" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: BigQuery integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "BigQuery" \
-            bigquery \
-            bigquery
-        else
+        if [ "$_DB_SHARD" != "bigquery" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: BigQuery tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: BigQuery integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "BigQuery" \
+          bigquery \
+          bigquery
 
   - id: "cloud-gda"
     name: golang:1
@@ -286,16 +286,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudgda" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud Gemini Data Analytics integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud Gemini Data Analytics" \
-            cloudgda \
-            cloudgda
-        else
+        if [ "$_DB_SHARD" != "cloudgda" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud Gemini Data Analytics tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud Gemini Data Analytics integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud Gemini Data Analytics" \
+          cloudgda \
+          cloudgda
 
   - id: "dataplex"
     name: golang:1
@@ -312,16 +312,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "dataplex" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Dataplex integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Dataplex" \
-            dataplex \
-            dataplex
-        else
+        if [ "$_DB_SHARD" != "dataplex" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Dataplex tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Dataplex integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Dataplex" \
+          dataplex \
+          dataplex
 
   - id: "dataform"
     name: golang:1
@@ -336,18 +336,18 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "dataform" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Dataform integration tests (Shard: $_DB_SHARD)"
-          apt-get update && apt-get install -y npm && \
-          npm install -g @dataform/cli && \
-          .ci/test_with_coverage.sh \
-            "Dataform" \
-            dataform \
-            dataform
-        else
+        if [ "$_DB_SHARD" != "dataform" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Dataform tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Dataform integration tests (Shard: $_DB_SHARD)"
+        apt-get update && apt-get install -y npm && \
+        npm install -g @dataform/cli && \
+        .ci/test_with_coverage.sh \
+          "Dataform" \
+          dataform \
+          dataform
 
   - id: "cloud-healthcare"
     name: golang:1
@@ -367,16 +367,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudhealthcare" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud Healthcare API integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud Healthcare API" \
-            cloudhealthcare \
-            cloudhealthcare
-        else
+        if [ "$_DB_SHARD" != "cloudhealthcare" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud Healthcare API tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud Healthcare API integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud Healthcare API" \
+          cloudhealthcare \
+          cloudhealthcare
 
   - id: "cloud-logging-admin"
     name: golang:1
@@ -392,16 +392,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudloggingadmin" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud Logging Admin integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud Logging Admin" \
-            cloudloggingadmin \
-            cloudloggingadmin
-        else
+        if [ "$_DB_SHARD" != "cloudloggingadmin" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud Logging Admin tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud Logging Admin integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud Logging Admin" \
+          cloudloggingadmin \
+          cloudloggingadmin
 
   - id: "postgres"
     name: golang:1
@@ -420,17 +420,17 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "postgres" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Postgres integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Postgres" \
-            postgres \
-            postgressql \
-            postgresexecutesql
-        else
+        if [ "$_DB_SHARD" != "postgres" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Postgres tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Postgres integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Postgres" \
+          postgres \
+          postgressql \
+          postgresexecutesql
 
   - id: "cockroachdb"
     name: golang:1
@@ -448,19 +448,19 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cockroachdb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: CockroachDB integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "CockroachDB" \
-            cockroachdb \
-            cockroachdbsql \
-            cockroachdbexecutesql \
-            cockroachdblisttables \
-            cockroachdblistschemas
-        else
+        if [ "$_DB_SHARD" != "cockroachdb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: CockroachDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: CockroachDB integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "CockroachDB" \
+          cockroachdb \
+          cockroachdbsql \
+          cockroachdbexecutesql \
+          cockroachdblisttables \
+          cockroachdblistschemas
 
   - id: "spanner"
     name: golang:1
@@ -479,16 +479,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "spanner" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Spanner integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Spanner" \
-            spanner \
-            spanner || echo "Integration tests failed." # ignore test failures
-        else
+        if [ "$_DB_SHARD" != "spanner" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Spanner tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Spanner integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Spanner" \
+          spanner \
+          spanner || echo "Integration tests failed." # ignore test failures
 
   - id: "neo4j"
     name: golang:1
@@ -505,16 +505,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "neo4j" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Neo4j integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Neo4j" \
-            neo4j \
-            neo4j
-        else
+        if [ "$_DB_SHARD" != "neo4j" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Neo4j tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Neo4j integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Neo4j" \
+          neo4j \
+          neo4j
 
   - id: "cloud-sql-mssql"
     name: golang:1
@@ -535,16 +535,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudsqlmssql" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud SQL MSSQL integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud SQL MSSQL" \
-            cloudsqlmssql \
-            mssql
-        else
+        if [ "$_DB_SHARD" != "cloudsqlmssql" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud SQL MSSQL tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud SQL MSSQL integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud SQL MSSQL" \
+          cloudsqlmssql \
+          mssql
 
   - id: "cloud-sql-mysql"
     name: golang:1
@@ -564,16 +564,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudsqlmysql" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud SQL MySQL integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud SQL MySQL" \
-            cloudsqlmysql \
-            mysql
-        else
+        if [ "$_DB_SHARD" != "cloudsqlmysql" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud SQL MySQL tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud SQL MySQL integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud SQL MySQL" \
+          cloudsqlmysql \
+          mysql
 
   - id: "mysql"
     name: golang:1
@@ -592,16 +592,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "mysql" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: MySQL integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "MySQL" \
-            mysql \
-            mysql
-        else
+        if [ "$_DB_SHARD" != "mysql" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: MySQL tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: MySQL integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "MySQL" \
+          mysql \
+          mysql
 
   - id: "mssql"
     name: golang:1
@@ -620,16 +620,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "mssql" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: MSSQL integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "MSSQL" \
-            mssql \
-            mssql
-        else
+        if [ "$_DB_SHARD" != "mssql" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: MSSQL tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: MSSQL integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "MSSQL" \
+          mssql \
+          mssql
         
 
   # - id: "dgraph"
@@ -688,16 +688,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "sqlite" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: SQLite integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "SQLite" \
-            sqlite \
-            sqlite
-        else
+        if [ "$_DB_SHARD" != "sqlite" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: SQLite tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: SQLite integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "SQLite" \
+          sqlite \
+          sqlite
 
   - id: "couchbase"
     name: golang:1
@@ -716,16 +716,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "couchbase" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Couchbase integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Couchbase" \
-            couchbase \
-            couchbase
-        else
+        if [ "$_DB_SHARD" != "couchbase" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Couchbase tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Couchbase integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Couchbase" \
+          couchbase \
+          couchbase
 
   - id: "redis"
     name: golang:1
@@ -741,16 +741,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "redis" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Redis integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Redis" \
-            redis \
-            redis
-        else
+        if [ "$_DB_SHARD" != "redis" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Redis tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Redis integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Redis" \
+          redis \
+          redis
 
   - id: "valkey"
     name: golang:1
@@ -767,16 +767,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "valkey" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Valkey integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Valkey" \
-            valkey \
-            valkey
-        else
+        if [ "$_DB_SHARD" != "valkey" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Valkey tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Valkey integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Valkey" \
+          valkey \
+          valkey
 
   - id: "oceanbase"
     name: golang:1
@@ -795,16 +795,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "oceanbase" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: OceanBase integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "OceanBase" \
-            oceanbase \
-            oceanbase
-        else
+        if [ "$_DB_SHARD" != "oceanbase" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: OceanBase tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: OceanBase integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "OceanBase" \
+          oceanbase \
+          oceanbase
 
   - id: "firestore"
     name: golang:1
@@ -821,16 +821,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "firestore" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Firestore integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Firestore" \
-            firestore \
-            firestore
-        else
+        if [ "$_DB_SHARD" != "firestore" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Firestore tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Firestore integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Firestore" \
+          firestore \
+          firestore
 
   - id: "mongodb"
     name: golang:1
@@ -847,16 +847,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "mongodb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: MongoDB integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "MongoDB" \
-            mongodb \
-            mongodb
-        else
+        if [ "$_DB_SHARD" != "mongodb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: MongoDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: MongoDB integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "MongoDB" \
+          mongodb \
+          mongodb
 
   - id: "looker"
     name: golang:1
@@ -882,16 +882,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "looker" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Looker integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Looker" \
-            looker \
-            looker
-        else
+        if [ "$_DB_SHARD" != "looker" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Looker tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Looker integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Looker" \
+          looker \
+          looker
 
   - id: "mindsdb"
     name: golang:1
@@ -909,16 +909,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "mindsdb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: MindsDB integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "MindsDB" \
-            mindsdb \
-            mindsdb
-        else
+        if [ "$_DB_SHARD" != "mindsdb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: MindsDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: MindsDB integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "MindsDB" \
+          mindsdb \
+          mindsdb
 
   - id: "cloud-sql"
     name: golang:1
@@ -933,16 +933,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cloudsql" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cloud SQL Wait for Operation integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cloud SQL Wait for Operation" \
-            cloudsql \
-            cloudsql
-        else
+        if [ "$_DB_SHARD" != "cloudsql" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cloud SQL Wait for Operation tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cloud SQL Wait for Operation integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cloud SQL Wait for Operation" \
+          cloudsql \
+          cloudsql
 
   - id: "tidb"
     name: golang:1
@@ -961,16 +961,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "tidb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: TiDB integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "TiDB" \
-            tidb \
-            tidbsql tidbexecutesql
-        else
+        if [ "$_DB_SHARD" != "tidb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: TiDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: TiDB integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "TiDB" \
+          tidb \
+          tidbsql tidbexecutesql
 
   - id: "firebird"
     name: golang:1
@@ -989,16 +989,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "firebird" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Firebird integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Firebird" \
-            firebird \
-            firebirdsql firebirdexecutesql
-        else
+        if [ "$_DB_SHARD" != "firebird" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Firebird tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Firebird integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Firebird" \
+          firebird \
+          firebirdsql firebirdexecutesql
 
   - id: "clickhouse"
     name: golang:1
@@ -1017,16 +1017,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "clickhouse" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: ClickHouse integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "ClickHouse" \
-            clickhouse \
-            clickhouse
-        else
+        if [ "$_DB_SHARD" != "clickhouse" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: ClickHouse tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: ClickHouse integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "ClickHouse" \
+          clickhouse \
+          clickhouse
 
   - id: "trino"
     name: golang:1
@@ -1046,16 +1046,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "trino" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Trino integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Trino" \
-            trino \
-            trinosql trinoexecutesql
-        else
+        if [ "$_DB_SHARD" != "trino" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Trino tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Trino integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Trino" \
+          trino \
+          trinosql trinoexecutesql
 
   - id: "yugabytedb"
     name: golang:1
@@ -1075,13 +1075,13 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "yugabytedb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: YugabyteDB integration tests (Shard: $_DB_SHARD)"
-          ./yugabytedb.test -test.v
-        else
+        if [ "$_DB_SHARD" != "yugabytedb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: YugabyteDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: YugabyteDB integration tests (Shard: $_DB_SHARD)"
+        ./yugabytedb.test -test.v
 
   - id: "elasticsearch"
     name: golang:1
@@ -1097,16 +1097,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "elasticsearch" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Elasticsearch integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Elasticsearch" \
-            elasticsearch \
-            elasticsearch
-        else
+        if [ "$_DB_SHARD" != "elasticsearch" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Elasticsearch tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Elasticsearch integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Elasticsearch" \
+          elasticsearch \
+          elasticsearch
 
   - id: "snowflake"
     name: golang:1
@@ -1124,16 +1124,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "snowflake" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Snowflake integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Snowflake" \
-            snowflake \
-            snowflake
-        else
+        if [ "$_DB_SHARD" != "snowflake" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Snowflake tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Snowflake integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Snowflake" \
+          snowflake \
+          snowflake
 
   - id: "cassandra"
     name: golang:1
@@ -1149,16 +1149,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "cassandra" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Cassandra integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Cassandra" \
-            cassandra \
-            cassandra
-        else
+        if [ "$_DB_SHARD" != "cassandra" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Cassandra tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Cassandra integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Cassandra" \
+          cassandra \
+          cassandra
 
   - id: "oracle"
     name: ghcr.io/oracle/oraclelinux9-instantclient:23
@@ -1175,31 +1175,31 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "oracle" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Oracle integration tests (Shard: $_DB_SHARD)"
-          
-          # Install the C compiler and Oracle SDK headers needed for cgo
-          dnf install -y gcc oracle-instantclient-devel
-          # Install Go
-          curl -L -o go.tar.gz "https://go.dev/dl/go1.25.1.linux-amd64.tar.gz"
-          tar -C /usr/local -xzf go.tar.gz
-          export PATH="/usr/local/go/bin:$$PATH"
-
-          go test -v ./tests/oracle/... \
-            -coverprofile=oracle_coverage.out \
-            -coverpkg=./internal/sources/oracle/...,./internal/tools/oracle/...
-
-          # Coverage check
-          total_coverage=$(go tool cover -func=oracle_coverage.out | grep "total:" | awk '{print $3}')
-          echo "Oracle total coverage: $total_coverage"
-          coverage_numeric=$(echo "$total_coverage" | sed 's/%//')
-          if awk -v cov="$coverage_numeric" 'BEGIN {exit !(cov < 60)}'; then
-              echo "Coverage failure: $total_coverage is below 60%."
-              exit 1
-          fi
-        else
+        if [ "$_DB_SHARD" != "oracle" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Oracle tests (Active shard is $_DB_SHARD)"
           exit 0
+        fi
+
+        echo "RUNNING: Oracle integration tests (Shard: $_DB_SHARD)"
+        
+        # Install the C compiler and Oracle SDK headers needed for cgo
+        dnf install -y gcc oracle-instantclient-devel
+        # Install Go
+        curl -L -o go.tar.gz "https://go.dev/dl/go1.25.1.linux-amd64.tar.gz"
+        tar -C /usr/local -xzf go.tar.gz
+        export PATH="/usr/local/go/bin:$$PATH"
+
+        go test -v ./tests/oracle/... \
+          -coverprofile=oracle_coverage.out \
+          -coverpkg=./internal/sources/oracle/...,./internal/tools/oracle/...
+
+        # Coverage check
+        total_coverage=$(go tool cover -func=oracle_coverage.out | grep "total:" | awk '{print $3}')
+        echo "Oracle total coverage: $total_coverage"
+        coverage_numeric=$(echo "$total_coverage" | sed 's/%//')
+        if awk -v cov="$coverage_numeric" 'BEGIN {exit !(cov < 60)}'; then
+            echo "Coverage failure: $total_coverage is below 60%."
+            exit 1
         fi
 
   - id: "serverless-spark"
@@ -1218,15 +1218,15 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "serverlessspark" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: Serverless Spark integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "Serverless Spark" \
-            serverlessspark
-        else
+        if [ "$_DB_SHARD" != "serverlessspark" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: Serverless Spark tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: Serverless Spark integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "Serverless Spark" \
+          serverlessspark
 
   - id: "singlestore"
     name: golang:1
@@ -1245,16 +1245,16 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "singlestore" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: SingleStore integration tests (Shard: $_DB_SHARD)"
-          .ci/test_with_coverage.sh \
-            "SingleStore" \
-            singlestore \
-            singlestore
-        else
+        if [ "$_DB_SHARD" != "singlestore" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: SingleStore tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: SingleStore integration tests (Shard: $_DB_SHARD)"
+        .ci/test_with_coverage.sh \
+          "SingleStore" \
+          singlestore \
+          singlestore
 
   - id: "mariadb"
     name: golang:1
@@ -1272,14 +1272,14 @@ steps:
     args:
       - -c
       - |
-        if [ "$_DB_SHARD" == "mariadb" ] || [ -z "$_DB_SHARD" ]; then
-          echo "RUNNING: MariaDB integration tests (Shard: $_DB_SHARD)"
-          # skip coverage check as it re-uses current MySQL implementation
-          go test ./tests/mariadb
-        else
+        if [ "$_DB_SHARD" != "mariadb" ] && [ -n "$_DB_SHARD" ]; then
           echo "SKIPPING: MariaDB tests (Active shard is $_DB_SHARD)"
           exit 0
         fi
+
+        echo "RUNNING: MariaDB integration tests (Shard: $_DB_SHARD)"
+        # skip coverage check as it re-uses current MySQL implementation
+        go test ./tests/mariadb
 
 
 availableSecrets:
