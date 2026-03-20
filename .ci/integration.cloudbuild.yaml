@@ -94,11 +94,22 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud SQL Postgres" \
-          cloudsqlpg \
-          postgressql \
-          postgresexecutesql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudsqlpg|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|.ci/"
+        
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Starting Cloud SQL Postgres tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud SQL Postgres" \
+            cloudsqlpg \
+            postgressql \
+            postgresexecutesql
+        else
+          echo "No relevant changes for Cloud SQL Postgres. Skipping shard."
+          exit 0
+        fi
 
   - id: "alloydb"
     name: golang:1
@@ -117,10 +128,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "AlloyDB" \
-          alloydb \
-          alloydb
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="alloydb|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|.ci/"
+        
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Starting AlloyDB tests..."
+          .ci/test_with_coverage.sh \
+            "AlloyDB" \
+            alloydb \
+            alloydb
+        else
+          echo "No relevant changes for AlloyDB. Skipping shard to save resources."
+          exit 0
+        fi
 
   - id: "alloydb-pg"
     name: golang:1
@@ -141,11 +163,22 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "AlloyDB Postgres" \
-          alloydbpg \
-          postgressql \
-          postgresexecutesql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="alloydbpg|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running AlloyDB Postgres tests..."
+          .ci/test_with_coverage.sh \
+            "AlloyDB Postgres" \
+            alloydbpg \
+            postgressql \
+            postgresexecutesql
+        else
+          echo "No relevant changes for AlloyDB Postgres. Skipping shard."
+          exit 0
+        fi
 
   - id: "alloydb-ai-nl"
     name: golang:1
@@ -166,10 +199,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "AlloyDB AI NL" \
-          alloydbainl \
-          alloydbainl
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="alloydbainl|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running AlloyDB AI NL tests..."
+          .ci/test_with_coverage.sh \
+            "AlloyDB AI NL" \
+            alloydbainl \
+            alloydbainl
+        else
+          echo "No relevant changes for AlloyDB AI NL. Skipping shard."
+          exit 0
+        fi
 
   - id: "alloydb-omni"
     name: golang:1
@@ -183,10 +227,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "AlloyDB Omni" \
-          alloydbomni \
-          postgres
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="alloydbomni|internal/sources/postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running AlloyDB Omni tests..."
+          .ci/test_with_coverage.sh \
+            "AlloyDB Omni" \
+            alloydbomni \
+            postgres
+        else
+          echo "No relevant changes for AlloyDB Omni. Skipping shard."
+          exit 0
+        fi
 
   - id: "bigtable"
     name: golang:1
@@ -204,10 +259,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Bigtable" \
-          bigtable \
-          bigtable
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="bigtable|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Bigtable tests..."
+          .ci/test_with_coverage.sh \
+            "Bigtable" \
+            bigtable \
+            bigtable
+        else
+          echo "No relevant changes for Bigtable. Skipping shard."
+          exit 0
+        fi
 
   - id: "bigquery"
     name: golang:1
@@ -224,10 +290,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "BigQuery" \
-          bigquery \
-          bigquery
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="bigquery|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running BigQuery tests..."
+          .ci/test_with_coverage.sh \
+            "BigQuery" \
+            bigquery \
+            bigquery
+        else
+          echo "No relevant changes for BigQuery. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-gda"
     name: golang:1
@@ -244,10 +321,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud Gemini Data Analytics" \
-          cloudgda \
-          cloudgda
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudgda|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cloud Gemini Data Analytics tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud Gemini Data Analytics" \
+            cloudgda \
+            cloudgda
+        else
+          echo "No relevant changes for Cloud Gemini Data Analytics. Skipping shard."
+          exit 0
+        fi
 
   - id: "dataplex"
     name: golang:1
@@ -264,10 +352,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Dataplex" \
-          dataplex \
-          dataplex
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="dataplex|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Dataplex tests..."
+          .ci/test_with_coverage.sh \
+            "Dataplex" \
+            dataplex \
+            dataplex
+        else
+          echo "No relevant changes for Dataplex. Skipping shard."
+          exit 0
+        fi
 
   - id: "dataform"
     name: golang:1
@@ -282,12 +381,23 @@ steps:
     args:
       - -c
       - |
-        apt-get update && apt-get install -y npm && \
-        npm install -g @dataform/cli && \
-        .ci/test_with_coverage.sh \
-          "Dataform" \
-          dataform \
-          dataform
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="dataform|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Dataform tests..."
+          apt-get update && apt-get install -y npm && \
+          npm install -g @dataform/cli && \
+          .ci/test_with_coverage.sh \
+            "Dataform" \
+            dataform \
+            dataform
+        else
+          echo "No relevant changes for Dataform. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-healthcare"
     name: golang:1
@@ -307,10 +417,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud Healthcare API" \
-          cloudhealthcare \
-          cloudhealthcare
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudhealthcare|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cloud Healthcare API tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud Healthcare API" \
+            cloudhealthcare \
+            cloudhealthcare
+        else
+          echo "No relevant changes for Cloud Healthcare API. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-logging-admin"
     name: golang:1
@@ -326,10 +447,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud Logging Admin" \
-          cloudloggingadmin \
-          cloudloggingadmin
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudloggingadmin|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cloud Logging Admin tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud Logging Admin" \
+            cloudloggingadmin \
+            cloudloggingadmin
+        else
+          echo "No relevant changes for Cloud Logging Admin. Skipping shard."
+          exit 0
+        fi
 
   - id: "postgres"
     name: golang:1
@@ -348,11 +480,22 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Postgres" \
-          postgres \
-          postgressql \
-          postgresexecutesql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Postgres tests..."
+          .ci/test_with_coverage.sh \
+            "Postgres" \
+            postgres \
+            postgressql \
+            postgresexecutesql
+        else
+          echo "No relevant changes for Postgres. Skipping shard."
+          exit 0
+        fi
 
   - id: "cockroachdb"
     name: golang:1
@@ -370,13 +513,24 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "CockroachDB" \
-          cockroachdb \
-          cockroachdbsql \
-          cockroachdbexecutesql \
-          cockroachdblisttables \
-          cockroachdblistschemas
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cockroachdb|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running CockroachDB tests..."
+          .ci/test_with_coverage.sh \
+            "CockroachDB" \
+            cockroachdb \
+            cockroachdbsql \
+            cockroachdbexecutesql \
+            cockroachdblisttables \
+            cockroachdblistschemas
+        else
+          echo "No relevant changes for CockroachDB. Skipping shard."
+          exit 0
+        fi
 
   - id: "spanner"
     name: golang:1
@@ -395,10 +549,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Spanner" \
-          spanner \
-          spanner || echo "Integration tests failed." # ignore test failures
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="spanner|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Spanner tests..."
+          .ci/test_with_coverage.sh \
+            "Spanner" \
+            spanner \
+            spanner || echo "Integration tests failed."
+        else
+          echo "No relevant changes for Spanner. Skipping shard."
+          exit 0
+        fi
 
   - id: "neo4j"
     name: golang:1
@@ -415,10 +580,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Neo4j" \
-          neo4j \
-          neo4j
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="neo4j|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Neo4j tests..."
+          .ci/test_with_coverage.sh \
+            "Neo4j" \
+            neo4j \
+            neo4j
+        else
+          echo "No relevant changes for Neo4j. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-sql-mssql"
     name: golang:1
@@ -439,10 +615,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud SQL MSSQL" \
-          cloudsqlmssql \
-          mssql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudsqlmssql|mssql|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cloud SQL MSSQL tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud SQL MSSQL" \
+            cloudsqlmssql \
+            mssql
+        else
+          echo "No relevant changes for Cloud SQL MSSQL. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-sql-mysql"
     name: golang:1
@@ -462,10 +649,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cloud SQL MySQL" \
-          cloudsqlmysql \
-          mysql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cloudsqlmysql|mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cloud SQL MySQL tests..."
+          .ci/test_with_coverage.sh \
+            "Cloud SQL MySQL" \
+            cloudsqlmysql \
+            mysql
+        else
+          echo "No relevant changes for Cloud SQL MySQL. Skipping shard."
+          exit 0
+        fi
 
   - id: "mysql"
     name: golang:1
@@ -484,10 +682,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "MySQL" \
-          mysql \
-          mysql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running MySQL tests..."
+          .ci/test_with_coverage.sh \
+            "MySQL" \
+            mysql \
+            mysql
+        else
+          echo "No relevant changes for MySQL. Skipping shard."
+          exit 0
+        fi
 
   - id: "mssql"
     name: golang:1
@@ -506,10 +715,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "MSSQL" \
-          mssql \
-          mssql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="mssql|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running MSSQL tests..."
+          .ci/test_with_coverage.sh \
+            "MSSQL" \
+            mssql \
+            mssql
+        else
+          echo "No relevant changes for MSSQL. Skipping shard."
+          exit 0
+        fi
 
   # - id: "dgraph"
   #   name: golang:1
@@ -542,10 +762,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "HTTP" \
-          http \
-          http
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="http|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running HTTP tests..."
+          .ci/test_with_coverage.sh \
+            "HTTP" \
+            http \
+            http
+        else
+          echo "No relevant changes for HTTP. Skipping shard."
+          exit 0
+        fi
 
   - id: "sqlite"
     name: golang:1
@@ -561,10 +792,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "SQLite" \
-          sqlite \
-          sqlite
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="sqlite|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running SQLite tests..."
+          .ci/test_with_coverage.sh \
+            "SQLite" \
+            sqlite \
+            sqlite
+        else
+          echo "No relevant changes for SQLite. Skipping shard."
+          exit 0
+        fi
 
   - id: "couchbase"
     name: golang:1
@@ -583,10 +825,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Couchbase" \
-          couchbase \
-          couchbase
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="couchbase|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Couchbase tests..."
+          .ci/test_with_coverage.sh \
+            "Couchbase" \
+            couchbase \
+            couchbase
+        else
+          echo "No relevant changes for Couchbase. Skipping shard."
+          exit 0
+        fi
 
   - id: "redis"
     name: golang:1
@@ -602,10 +855,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Redis" \
-          redis \
-          redis
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="redis|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Redis tests..."
+          .ci/test_with_coverage.sh \
+            "Redis" \
+            redis \
+            redis
+        else
+          echo "No relevant changes for Redis. Skipping shard."
+          exit 0
+        fi
 
   - id: "valkey"
     name: golang:1
@@ -622,10 +886,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Valkey" \
-          valkey \
-          valkey
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="valkey|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Valkey tests..."
+          .ci/test_with_coverage.sh \
+            "Valkey" \
+            valkey \
+            valkey
+        else
+          echo "No relevant changes for Valkey. Skipping shard."
+          exit 0
+        fi
 
   - id: "oceanbase"
     name: golang:1
@@ -644,10 +919,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "OceanBase" \
-          oceanbase \
-          oceanbase
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="oceanbase|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running OceanBase tests..."
+          .ci/test_with_coverage.sh \
+            "OceanBase" \
+            oceanbase \
+            oceanbase
+        else
+          echo "No relevant changes for OceanBase. Skipping shard."
+          exit 0
+        fi
 
   - id: "firestore"
     name: golang:1
@@ -664,10 +950,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Firestore" \
-          firestore \
-          firestore
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="firestore|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running Firestore tests..."
+          .ci/test_with_coverage.sh \
+            "Firestore" \
+            firestore \
+            firestore
+        else
+          echo "No relevant changes for Firestore. Skipping shard."
+          exit 0
+        fi
 
   - id: "mongodb"
     name: golang:1
@@ -684,10 +981,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "MongoDB" \
-          mongodb \
-          mongodb
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="mongodb|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running MongoDB tests..."
+          .ci/test_with_coverage.sh \
+            "MongoDB" \
+            mongodb \
+            mongodb
+        else
+          echo "No relevant changes for MongoDB. Skipping shard."
+          exit 0
+        fi
 
   - id: "looker"
     name: golang:1
@@ -713,10 +1021,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Looker" \
-          looker \
-          looker
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="looker|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running Looker tests..."
+          .ci/test_with_coverage.sh \
+            "Looker" \
+            looker \
+            looker
+        else
+          echo "No relevant changes for Looker. Skipping shard."
+          exit 0
+        fi
 
   - id: "mindsdb"
     name: golang:1
@@ -734,10 +1053,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "MindsDB" \
-          mindsdb \
-          mindsdb
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="mindsdb|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running MindsDB tests..."
+          .ci/test_with_coverage.sh \
+            "MindsDB" \
+            mindsdb \
+            mindsdb
+        else
+          echo "No relevant changes for MindsDB. Skipping shard."
+          exit 0
+        fi
 
   - id: "cloud-sql"
     name: golang:1
@@ -774,10 +1104,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "TiDB" \
-          tidb \
-          tidbsql tidbexecutesql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="tidb|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running TiDB tests..."
+          .ci/test_with_coverage.sh \
+            "TiDB" \
+            tidb \
+            tidbsql tidbexecutesql
+        else
+          echo "No relevant changes for TiDB. Skipping shard."
+          exit 0
+        fi
 
   - id: "firebird"
     name: golang:1
@@ -796,10 +1137,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="firebird|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running Firebird tests..."
+          .ci/test_with_coverage.sh \
           "Firebird" \
           firebird \
           firebirdsql firebirdexecutesql
+        else
+          echo "No relevant changes for Firebird. Skipping shard."
+          exit 0
+        fi
 
   - id: "clickhouse"
     name: golang:1
@@ -818,10 +1170,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="clickhouse|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Relevant changes detected. Running ClickHouse tests..."
+          .ci/test_with_coverage.sh \
           "ClickHouse" \
           clickhouse \
           clickhouse
+        else
+          echo "No relevant changes for ClickHouse. Skipping shard."
+          exit 0
+        fi
 
   - id: "trino"
     name: golang:1
@@ -841,10 +1204,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Trino" \
-          trino \
-          trinosql trinoexecutesql
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="trino|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Trino tests..."
+          .ci/test_with_coverage.sh \
+            "Trino" \
+            trino \
+            trinosql trinoexecutesql
+        else
+          echo "No relevant changes for Trino. Skipping shard."
+          exit 0
+        fi
 
   - id: "yugabytedb"
     name: golang:1
@@ -864,7 +1238,18 @@ steps:
     args:
       - -c
       - |
-        ./yugabytedb.test -test.v
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="yugabytedb|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running YugabyteDB tests..."
+          ./yugabytedb.test -test.v
+        else
+          echo "No relevant changes for YugabyteDB. Skipping shard."
+          exit 0
+        fi
 
   - id: "elasticsearch"
     name: golang:1
@@ -880,10 +1265,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Elasticsearch" \
-          elasticsearch \
-          elasticsearch
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="elasticsearch|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Elasticsearch tests..."
+          .ci/test_with_coverage.sh \
+            "Elasticsearch" \
+            elasticsearch \
+            elasticsearch
+        else
+          echo "No relevant changes for Elasticsearch. Skipping shard."
+          exit 0
+        fi
 
   - id: "snowflake"
     name: golang:1
@@ -901,10 +1297,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Snowflake" \
-          snowflake \
-          snowflake
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="snowflake|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Snowflake tests..."
+          .ci/test_with_coverage.sh \
+            "Snowflake" \
+            snowflake \
+            snowflake
+        else
+          echo "No relevant changes for Snowflake. Skipping shard."
+          exit 0
+        fi
 
   - id: "cassandra"
     name: golang:1
@@ -920,10 +1327,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Cassandra" \
-          cassandra \
-          cassandra
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="cassandra|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Cassandra tests..."
+          .ci/test_with_coverage.sh \
+            "Cassandra" \
+            cassandra \
+            cassandra
+        else
+          echo "No relevant changes for Cassandra. Skipping shard."
+          exit 0
+        fi
 
   - id: "oracle"
     name: ghcr.io/oracle/oraclelinux9-instantclient:23
@@ -940,24 +1358,35 @@ steps:
     args:
       - -c
       - |
-        # Install the C compiler and Oracle SDK headers needed for cgo
-        dnf install -y gcc oracle-instantclient-devel
-        # Install Go
-        curl -L -o go.tar.gz "https://go.dev/dl/go1.25.1.linux-amd64.tar.gz"
-        tar -C /usr/local -xzf go.tar.gz
-        export PATH="/usr/local/go/bin:$$PATH"
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
 
-        go test -v ./tests/oracle/... \
-          -coverprofile=oracle_coverage.out \
-          -coverpkg=./internal/sources/oracle/...,./internal/tools/oracle/...
+        PATTERN="oracle|internal/server/|.ci/"
 
-        # Coverage check
-        total_coverage=$(go tool cover -func=oracle_coverage.out | grep "total:" | awk '{print $3}')
-        echo "Oracle total coverage: $total_coverage"
-        coverage_numeric=$(echo "$total_coverage" | sed 's/%//')
-        if awk -v cov="$coverage_numeric" 'BEGIN {exit !(cov < 60)}'; then
-            echo "Coverage failure: $total_coverage is below 60%."
-            exit 1
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Oracle tests..."
+          # Install the C compiler and Oracle SDK headers needed for cgo
+          dnf install -y gcc oracle-instantclient-devel
+          # Install Go
+          curl -L -o go.tar.gz "https://go.dev/dl/go1.25.1.linux-amd64.tar.gz"
+          tar -C /usr/local -xzf go.tar.gz
+          export PATH="/usr/local/go/bin:$$PATH"
+
+          go test -v ./tests/oracle/... \
+            -coverprofile=oracle_coverage.out \
+            -coverpkg=./internal/sources/oracle/...,./internal/tools/oracle/...
+
+          # Coverage check
+          total_coverage=$(go tool cover -func=oracle_coverage.out | grep "total:" | awk '{print $3}')
+          echo "Oracle total coverage: $total_coverage"
+          coverage_numeric=$(echo "$total_coverage" | sed 's/%//')
+          if awk -v cov="$coverage_numeric" 'BEGIN {exit !(cov < 60)}'; then
+              echo "Coverage failure: $total_coverage is below 60%."
+              exit 1
+          fi
+        else
+          echo "No relevant changes for Oracle. Skipping shard."
+          exit 0
         fi
 
   - id: "serverless-spark"
@@ -976,9 +1405,20 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "Serverless Spark" \
-          serverlessspark
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="serverlessspark|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running Serverless Spark tests..."
+          .ci/test_with_coverage.sh \
+            "Serverless Spark" \
+            serverlessspark
+        else
+          echo "No relevant changes for Serverless Spark. Skipping shard."
+          exit 0
+        fi
 
   - id: "singlestore"
     name: golang:1
@@ -997,10 +1437,21 @@ steps:
     args:
       - -c
       - |
-        .ci/test_with_coverage.sh \
-          "SingleStore" \
-          singlestore \
-          singlestore
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="singlestore|internal/server/|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running SingleStore tests..."
+          .ci/test_with_coverage.sh \
+            "SingleStore" \
+            singlestore \
+            singlestore
+        else
+          echo "No relevant changes for SingleStore. Skipping shard."
+          exit 0
+        fi
 
   - id: "mariadb"
     name: golang:1
@@ -1018,8 +1469,19 @@ steps:
     args:
       - -c
       - |
-        # skip coverage check as it re-uses current MySQL implementation
-        go test ./tests/mariadb
+        git fetch origin main > /dev/null 2>&1
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+
+        PATTERN="mariadb|mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
+
+        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+          echo "Changes detected. Running MariaDB tests..."
+          # skip coverage check as it re-uses current MySQL implementation
+          go test ./tests/mariadb
+        else
+          echo "No relevant changes for MariaDB. Skipping shard."
+          exit 0
+        fi
 
 
 availableSecrets:
