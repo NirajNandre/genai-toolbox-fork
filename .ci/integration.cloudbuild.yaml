@@ -13,6 +13,16 @@
 # limitations under the License.
 
 steps:
+  - id: "detect-changes"
+    name: "gcr.io/cloud-builders/git"
+    waitFor: ["-"] 
+    entrypoint: "bash"
+    args:
+      - -c
+      - |
+        git fetch origin main > /dev/null 2>&1
+        git diff --name-only origin/main...HEAD > /workspace/changed_files.txt
+
   - id: "install-dependencies"
     name: golang:1
     waitFor: ["-"]
@@ -77,7 +87,7 @@ steps:
 
   - id: "cloud-sql-pg"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -94,12 +104,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
-        PATTERN="cloudsqlpg|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|.ci/"
+        PATTERN="cloudsqlpg|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
         
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Starting Cloud SQL Postgres tests..."
           .ci/test_with_coverage.sh \
             "Cloud SQL Postgres" \
@@ -113,7 +120,7 @@ steps:
 
   - id: "alloydb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -128,12 +135,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="alloydb|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|.ci/"
         
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Starting AlloyDB tests..."
           .ci/test_with_coverage.sh \
             "AlloyDB" \
@@ -146,7 +150,7 @@ steps:
 
   - id: "alloydb-pg"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -163,12 +167,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="alloydbpg|internal/sources/postgres|tests/postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running AlloyDB Postgres tests..."
           .ci/test_with_coverage.sh \
             "AlloyDB Postgres" \
@@ -182,7 +183,7 @@ steps:
 
   - id: "alloydb-ai-nl"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -199,12 +200,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="alloydbainl|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running AlloyDB AI NL tests..."
           .ci/test_with_coverage.sh \
             "AlloyDB AI NL" \
@@ -217,7 +215,7 @@ steps:
 
   - id: "alloydb-omni"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -227,12 +225,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="alloydbomni|internal/sources/postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running AlloyDB Omni tests..."
           .ci/test_with_coverage.sh \
             "AlloyDB Omni" \
@@ -245,7 +240,7 @@ steps:
 
   - id: "bigtable"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -259,12 +254,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="bigtable|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Bigtable tests..."
           .ci/test_with_coverage.sh \
             "Bigtable" \
@@ -277,7 +269,7 @@ steps:
 
   - id: "bigquery"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -290,12 +282,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="bigquery|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running BigQuery tests..."
           .ci/test_with_coverage.sh \
             "BigQuery" \
@@ -308,7 +297,7 @@ steps:
 
   - id: "cloud-gda"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -321,12 +310,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cloudgda|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cloud Gemini Data Analytics tests..."
           .ci/test_with_coverage.sh \
             "Cloud Gemini Data Analytics" \
@@ -339,7 +325,7 @@ steps:
 
   - id: "dataplex"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -352,12 +338,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="dataplex|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Dataplex tests..."
           .ci/test_with_coverage.sh \
             "Dataplex" \
@@ -370,7 +353,7 @@ steps:
 
   - id: "dataform"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -381,12 +364,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="dataform|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Dataform tests..."
           apt-get update && apt-get install -y npm && \
           npm install -g @dataform/cli && \
@@ -401,7 +381,7 @@ steps:
 
   - id: "cloud-healthcare"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -417,12 +397,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cloudhealthcare|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cloud Healthcare API tests..."
           .ci/test_with_coverage.sh \
             "Cloud Healthcare API" \
@@ -435,7 +412,7 @@ steps:
 
   - id: "cloud-logging-admin"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -447,12 +424,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cloudloggingadmin|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cloud Logging Admin tests..."
           .ci/test_with_coverage.sh \
             "Cloud Logging Admin" \
@@ -465,7 +439,7 @@ steps:
 
   - id: "postgres"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -480,12 +454,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="postgres|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Postgres tests..."
           .ci/test_with_coverage.sh \
             "Postgres" \
@@ -499,7 +470,7 @@ steps:
 
   - id: "cockroachdb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -513,12 +484,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cockroachdb|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running CockroachDB tests..."
           .ci/test_with_coverage.sh \
             "CockroachDB" \
@@ -534,7 +502,7 @@ steps:
 
   - id: "spanner"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -549,12 +517,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="spanner|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Spanner tests..."
           .ci/test_with_coverage.sh \
             "Spanner" \
@@ -567,7 +532,7 @@ steps:
 
   - id: "neo4j"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -580,12 +545,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="neo4j|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Neo4j tests..."
           .ci/test_with_coverage.sh \
             "Neo4j" \
@@ -598,7 +560,7 @@ steps:
 
   - id: "cloud-sql-mssql"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -615,12 +577,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cloudsqlmssql|mssql|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cloud SQL MSSQL tests..."
           .ci/test_with_coverage.sh \
             "Cloud SQL MSSQL" \
@@ -633,7 +592,7 @@ steps:
 
   - id: "cloud-sql-mysql"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -649,12 +608,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cloudsqlmysql|mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cloud SQL MySQL tests..."
           .ci/test_with_coverage.sh \
             "Cloud SQL MySQL" \
@@ -667,7 +623,7 @@ steps:
 
   - id: "mysql"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -682,12 +638,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running MySQL tests..."
           .ci/test_with_coverage.sh \
             "MySQL" \
@@ -700,7 +653,7 @@ steps:
 
   - id: "mssql"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -715,12 +668,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="mssql|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running MSSQL tests..."
           .ci/test_with_coverage.sh \
             "MSSQL" \
@@ -733,7 +683,7 @@ steps:
 
   # - id: "dgraph"
   #   name: golang:1
-  #   waitFor: ["compile-test-binary"]
+  #   waitFor: ["compile-test-binary", "detect-changes"]
   #   entrypoint: /bin/bash
   #   env:
   #     - "GOPATH=/gopath"
@@ -751,7 +701,7 @@ steps:
 
   - id: "http"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -762,12 +712,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="http|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running HTTP tests..."
           .ci/test_with_coverage.sh \
             "HTTP" \
@@ -780,7 +727,7 @@ steps:
 
   - id: "sqlite"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -792,12 +739,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="sqlite|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running SQLite tests..."
           .ci/test_with_coverage.sh \
             "SQLite" \
@@ -810,7 +754,7 @@ steps:
 
   - id: "couchbase"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -825,12 +769,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="couchbase|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Couchbase tests..."
           .ci/test_with_coverage.sh \
             "Couchbase" \
@@ -843,7 +784,7 @@ steps:
 
   - id: "redis"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -855,12 +796,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="redis|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Redis tests..."
           .ci/test_with_coverage.sh \
             "Redis" \
@@ -873,7 +811,7 @@ steps:
 
   - id: "valkey"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -886,12 +824,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="valkey|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Valkey tests..."
           .ci/test_with_coverage.sh \
             "Valkey" \
@@ -904,7 +839,7 @@ steps:
 
   - id: "oceanbase"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -919,12 +854,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="oceanbase|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running OceanBase tests..."
           .ci/test_with_coverage.sh \
             "OceanBase" \
@@ -937,7 +869,7 @@ steps:
 
   - id: "firestore"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -950,12 +882,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="firestore|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running Firestore tests..."
           .ci/test_with_coverage.sh \
             "Firestore" \
@@ -968,7 +897,7 @@ steps:
 
   - id: "mongodb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -981,12 +910,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="mongodb|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running MongoDB tests..."
           .ci/test_with_coverage.sh \
             "MongoDB" \
@@ -999,7 +925,7 @@ steps:
 
   - id: "looker"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1021,12 +947,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="looker|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running Looker tests..."
           .ci/test_with_coverage.sh \
             "Looker" \
@@ -1039,7 +962,7 @@ steps:
 
   - id: "mindsdb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1053,12 +976,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="mindsdb|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running MindsDB tests..."
           .ci/test_with_coverage.sh \
             "MindsDB" \
@@ -1071,7 +991,7 @@ steps:
 
   - id: "cloud-sql"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1089,7 +1009,7 @@ steps:
 
   - id: "tidb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1104,12 +1024,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="tidb|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running TiDB tests..."
           .ci/test_with_coverage.sh \
             "TiDB" \
@@ -1122,7 +1039,7 @@ steps:
 
   - id: "firebird"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1137,12 +1054,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="firebird|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running Firebird tests..."
           .ci/test_with_coverage.sh \
           "Firebird" \
@@ -1155,7 +1069,7 @@ steps:
 
   - id: "clickhouse"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1170,12 +1084,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="clickhouse|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Relevant changes detected. Running ClickHouse tests..."
           .ci/test_with_coverage.sh \
           "ClickHouse" \
@@ -1188,7 +1099,7 @@ steps:
 
   - id: "trino"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1204,12 +1115,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="trino|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Trino tests..."
           .ci/test_with_coverage.sh \
             "Trino" \
@@ -1222,7 +1130,7 @@ steps:
 
   - id: "yugabytedb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1238,12 +1146,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="yugabytedb|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running YugabyteDB tests..."
           ./yugabytedb.test -test.v
         else
@@ -1253,7 +1158,7 @@ steps:
 
   - id: "elasticsearch"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1265,12 +1170,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="elasticsearch|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Elasticsearch tests..."
           .ci/test_with_coverage.sh \
             "Elasticsearch" \
@@ -1283,7 +1185,7 @@ steps:
 
   - id: "snowflake"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1297,12 +1199,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="snowflake|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Snowflake tests..."
           .ci/test_with_coverage.sh \
             "Snowflake" \
@@ -1315,7 +1214,7 @@ steps:
 
   - id: "cassandra"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1327,12 +1226,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="cassandra|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Cassandra tests..."
           .ci/test_with_coverage.sh \
             "Cassandra" \
@@ -1358,12 +1254,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="oracle|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Oracle tests..."
           # Install the C compiler and Oracle SDK headers needed for cgo
           dnf install -y gcc oracle-instantclient-devel
@@ -1391,7 +1284,7 @@ steps:
 
   - id: "serverless-spark"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1405,12 +1298,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="serverlessspark|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running Serverless Spark tests..."
           .ci/test_with_coverage.sh \
             "Serverless Spark" \
@@ -1422,7 +1312,7 @@ steps:
 
   - id: "singlestore"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1437,12 +1327,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="singlestore|internal/server/|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running SingleStore tests..."
           .ci/test_with_coverage.sh \
             "SingleStore" \
@@ -1455,7 +1342,7 @@ steps:
 
   - id: "mariadb"
     name: golang:1
-    waitFor: ["compile-test-binary"]
+    waitFor: ["compile-test-binary", "detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
@@ -1469,12 +1356,9 @@ steps:
     args:
       - -c
       - |
-        git fetch origin main > /dev/null 2>&1
-        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-
         PATTERN="mariadb|mysql|internal/server/|tests/common.go|tests/tool.go|.ci/"
 
-        if echo "$CHANGED_FILES" | grep -qE "$PATTERN"; then
+        if grep -qE "$$PATTERN" /workspace/changed_files.txt; then
           echo "Changes detected. Running MariaDB tests..."
           # skip coverage check as it re-uses current MySQL implementation
           go test ./tests/mariadb
