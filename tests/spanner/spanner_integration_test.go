@@ -90,7 +90,6 @@ func initSpannerClients(ctx context.Context, project, instance, dbname string) (
 }
 
 func TestSpannerToolEndpoints(t *testing.T) {
-	//added this comment for testing the sharding changes
 	sourceConfig := getSpannerVars(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
