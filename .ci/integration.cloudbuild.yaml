@@ -20,6 +20,7 @@ steps:
     args:
       - -c
       - |
+        git fetch --unshallow || true
         git fetch origin main > /dev/null 2>&1
         git diff --name-only origin/main...HEAD > /workspace/changed_files.txt
 
