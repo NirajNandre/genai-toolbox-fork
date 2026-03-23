@@ -1242,7 +1242,7 @@ steps:
 
   - id: "oracle"
     name: ghcr.io/oracle/oraclelinux9-instantclient:23
-    waitFor: ["install-dependencies"]
+    waitFor: ["install-dependencies","detect-changes"]
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
