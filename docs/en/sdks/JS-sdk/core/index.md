@@ -28,7 +28,7 @@ npm install @toolbox-sdk/core
 
 
 1. **Start the Toolbox Service**
-   - Make sure the MCP Toolbox service is running. See the [Toolbox Getting Started Guide](/getting-started/introduction/#getting-started).
+   - Make sure the MCP Toolbox service is running. See the [Toolbox Getting Started Guide](../../../getting-started/introduction/_index.md#getting-started).
 
 2. **Minimal Example**
 
@@ -87,16 +87,13 @@ The SDK supports multiple transport protocols to communicate with the Toolbox se
 
 ### Available Protocols
 
-{{ <notice note > }}
-The native Toolbox protocol (Protocol.TOOLBOX) is deprecated and will be removed on March 4, 2026. Please use Protocol.MCP or specific MCP versions.
-{{ < /notice >}}
+We currently support different versions of the MCP protocol.
 
 - `Protocol.MCP`: The default protocol version (currently aliases to `MCP_v20250618`).
 - `Protocol.MCP_v20241105`: Use this for compatibility with older MCP servers (November 2024 version).
 - `Protocol.MCP_v20250326`: March 2025 version.
 - `Protocol.MCP_v20250618`: June 2025 version.
 - `Protocol.MCP_v20251125`: November 2025 version.
-- `Protocol.TOOLBOX`: **Deprecated** Legacy Toolbox protocol.
 
 ### Specifying a Protocol
 
@@ -147,7 +144,7 @@ const result = await tool({a: 5, b: 2})
 ```
 
 {{< notice tip>}}
-For a more comprehensive guide on setting up the Toolbox service itself, which you'll need running to use this SDK, please refer to the [Toolbox Quickstart Guide](getting-started/local_quickstart).
+For a more comprehensive guide on setting up the Toolbox service itself, which you'll need running to use this SDK, please refer to the [Toolbox Quickstart Guide](../../../getting-started/local_quickstart.md).
 {{< /notice >}}
 
 ## Client to Server Authentication
@@ -249,14 +246,14 @@ Oauth2 tokens) when invoking that specific tool.
 
 ### Supported Authentication Mechanisms
 
-The Toolbox service enables secure tool usage through **Authenticated Parameters**. For detailed information on how these mechanisms work within the Toolbox service and how to configure them, please refer to [Toolbox Service Documentation - Authenticated Parameters](resources/tools/#authenticated-parameters)
+The Toolbox service enables secure tool usage through **Authenticated Parameters**. For detailed information on how these mechanisms work within the Toolbox service and how to configure them, please refer to [Toolbox Service Documentation - Authenticated Parameters](../../../resources/tools/_index.md#authenticated-parameters)
 
 ### Step 1: Configure Tools in Toolbox Service
 
 First, ensure the target tool(s) are configured correctly in the Toolbox service
 to require authentication. Refer to the [Toolbox Service Documentation -
 Authenticated
-Parameters](resources/tools/#authenticated-parameters)
+Parameters](../../../resources/tools/_index.md#authenticated-parameters)
 for instructions.
 
 ### Step 2: Configure SDK Client
@@ -448,9 +445,7 @@ await multiplyNumbers.invoke({ a: 2, b: 3 });
 ```
 
 The `multiplyNumbers` tool is compatible with [Langchain/Langraph
-agents](http://js.langchain.com/docs/concepts/agents/)
-such as [React
-Agents](https://langchain-ai.github.io/langgraphjs/reference/functions/langgraph_prebuilt.createReactAgent.html).
+agents](http://js.langchain.com/docs/concepts/agents/).
 
 </details>
 

@@ -29,7 +29,7 @@ The `ToolboxClient` (and its synchronous counterpart `ToolboxSyncClient`) intera
 ## Quickstart
 
 1. **Start the Toolbox Service**
-   - Make sure the MCP Toolbox service is running on port `5000` of your local machine. See the [Toolbox Getting Started Guide](/getting-started/introduction/#getting-started).
+   - Make sure the MCP Toolbox service is running on port `5000` of your local machine. See the [Toolbox Getting Started Guide](../../../getting-started/introduction/_index.md#getting-started).
 
 2. **Minimal Example**
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
 
 {{< notice tip>}}
-For a complete, end-to-end example including setting up the service and using an SDK, see the full tutorial: [**Toolbox Quickstart Tutorial**](https://googleapis.github.io/genai-toolbox/getting-started/local_quickstart)
+For a complete, end-to-end example including setting up the service and using an SDK, see the full tutorial: [**Toolbox Quickstart Tutorial**](../../../getting-started/local_quickstart.md)
 {{< /notice >}}
 
 {{< notice note>}}
@@ -103,25 +103,17 @@ You can explicitly select a protocol using the `protocol` option during client i
 | Constant | Description |
 | :--- | :--- |
 | `Protocol.MCP` | **(Default)** Alias for the default MCP version (currently `2025-06-18`). |
-| `Protocol.TOOLBOX` | **DEPRECATED**: The native Toolbox HTTP protocol. Will be removed on March 4, 2026. |
 | `Protocol.MCP_v20251125` | MCP Protocol version 2025-11-25. |
 | `Protocol.MCP_v20250618` | MCP Protocol version 2025-06-18. |
 | `Protocol.MCP_v20241105` | MCP Protocol version 2024-11-05. |
 
-{{< notice note >}}
-The **Native Toolbox Protocol** (`Protocol.TOOLBOX`) is deprecated and will be removed on **March 4, 2026**.
-Please migrate to using the **MCP Protocol** (`Protocol.MCP`), which is the default.
-{{< /notice >}}
-
 ### Example
-
-If you wish to use the native Toolbox protocol:
 
 ```py
 from toolbox_core import ToolboxClient
 from toolbox_core.protocol import Protocol
 
-async with ToolboxClient("http://127.0.0.1:5000", protocol=Protocol.TOOLBOX) as toolbox:
+async with ToolboxClient("http://127.0.0.1:5000", protocol=Protocol.MCP) as toolbox:
     # Use client
     pass
 ```
@@ -177,7 +169,7 @@ result = await tool("foo", bar="baz")
 ```
 
 {{< notice tip>}}
-For a more comprehensive guide on setting up the Toolbox service itself, which you'll need running to use this SDK, please refer to the [Toolbox Quickstart Guide](getting-started/local_quickstart).
+For a more comprehensive guide on setting up the Toolbox service itself, which you'll need running to use this SDK, please refer to the [Toolbox Quickstart Guide](../../../getting-started/local_quickstart.md).
 {{< /notice >}}
 
 ## Synchronous Usage
@@ -381,12 +373,11 @@ Oauth2 tokens) when invoking that specific tool.
 
 ### Supported Authentication Mechanisms
 
-The Toolbox service enables secure tool usage through **Authenticated Parameters**. For detailed information on how these mechanisms work within the Toolbox service and how to configure them, please refer to [Authenticated Parameters](resources/tools/#authenticated-parameters)
-
+The Toolbox service enables secure tool usage through **Authenticated Parameters**. For detailed information on how these mechanisms work within the Toolbox service and how to configure them, please refer to [Authenticated Parameters](../../../resources/tools/_index.md#authenticated-parameters)
 ### Step 1: Configure Tools in Toolbox Service
 
 First, ensure the target tool(s) are configured correctly in the Toolbox service
-to require authentication. Refer to the [Authenticated Parameters](https://googleapis.github.io/genai-toolbox/resources/tools/#authenticated-parameters)
+to require authentication. Refer to the [Authenticated Parameters](../../../resources/tools/_index.md#authenticated-parameters)
 for instructions.
 
 ### Step 2: Configure SDK Client
