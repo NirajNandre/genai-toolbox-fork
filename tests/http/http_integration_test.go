@@ -116,6 +116,7 @@ func handleTool0(w http.ResponseWriter, r *http.Request) {
 
 // handler function for the test server
 func handleTool1(w http.ResponseWriter, r *http.Request) {
+	//added this comment for testing the sharding changes
 	// expect GET method
 	if r.Method != http.MethodGet {
 		errorMessage := fmt.Sprintf("expected GET method but got: %s", string(r.Method))

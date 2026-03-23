@@ -147,6 +147,7 @@ func getAlloyDBToolsConfig() map[string]any {
 }
 
 func TestAlloyDBToolEndpoints(t *testing.T) {
+	//added this comment for testing the sharding changes
 	vars := getAlloyDBVars(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()

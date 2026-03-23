@@ -99,6 +99,8 @@ func initCloudSQLMySQLConnectionPool(project, region, instance, ipType, user, pa
 }
 
 func TestCloudSQLMySQLToolEndpoints(t *testing.T) {
+
+	//added this comment for testing the sharding changes
 	sourceConfig := getCloudSQLMySQLVars(t)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
