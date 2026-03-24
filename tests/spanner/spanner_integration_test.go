@@ -615,7 +615,18 @@ func runSpannerExecuteSqlToolInvokeTest(t *testing.T, select1Want, invokeParamWa
 
 			got, ok := body["result"].(string)
 			if !ok {
-				t.Fatalf("unable to find result in response body")
+				if errMsg, ok := body["error"].(string); ok {
+					got = errMsg
+				} else {
+					t.Fatalf("unable to find result or error in response body: %v", body)
+				}
+			}
+
+			if tc.isErr {
+				if got == "" {
+					t.Fatalf("test %s: expected error message but got empty result", tc.name)
+				}
+				return
 			}
 
 			if got != tc.want {
