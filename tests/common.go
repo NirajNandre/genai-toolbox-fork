@@ -1074,7 +1074,7 @@ func CleanupMSSQLTables(t *testing.T, ctx context.Context, pool *sql.DB) {
 
 }
 
-func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigqueryapi.Client, uniqueID string) {
+func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery.Client, uniqueID string) {
 	it := client.Datasets(ctx)
 	for {
 		ds, err := it.Next()
@@ -1082,14 +1082,31 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 			break
 		}
 		if err != nil {
-			t.Errorf("INTEGRATION CLEANUP: Failed to iterate datasets: %v", err)
+			t.Errorf("INTEGRATION CLEANUP: Error listing datasets: %v", err)
 			return
 		}
 
-		// Check if the dataset ID contains our uniqueID suffix
 		if strings.Contains(ds.DatasetID, uniqueID) {
-			t.Logf("INTEGRATION CLEANUP: Deleting dataset %s and its contents", ds.DatasetID)
-			if err := ds.DeleteWithContents(ctx); err != nil {
+			t.Logf("INTEGRATION CLEANUP: Purging tables in dataset %s", ds.DatasetID)
+			
+			// Manually delete all tables as Dataset.Delete fails if the dataset is not empty
+			tableIt := ds.Tables(ctx)
+			for {
+				table, err := tableIt.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Errorf("INTEGRATION CLEANUP: Failed to iterate tables in dataset %s: %v", ds.DatasetID, err)
+					break
+				}
+				if err := table.Delete(ctx); err != nil {
+					t.Errorf("INTEGRATION CLEANUP: Failed to delete table %s: %v", table.TableID, err)
+				}
+			}
+
+			// Now that the dataset is empty, delete the dataset container
+			if err := ds.Delete(ctx); err != nil {
 				t.Errorf("INTEGRATION CLEANUP: Failed to delete dataset %s: %v", ds.DatasetID, err)
 			} else {
 				t.Logf("INTEGRATION CLEANUP SUCCESS: Wiped dataset %s", ds.DatasetID)
@@ -1097,3 +1114,4 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 		}
 	}
 }
+
