@@ -26,25 +26,28 @@ documentation](https://googleapis.github.io/genai-toolbox/).
 > added MCP compatibility.
 
 <!-- TOC ignore:true -->
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 <!-- TOC -->
 
-- [Why Toolbox?](#why-toolbox)
-- [General Architecture](#general-architecture)
-- [Getting Started](#getting-started)
-  - [Installing the server](#installing-the-server)
-  - [Running the server](#running-the-server)
-  - [Integrating your application](#integrating-your-application)
-  - [Using Toolbox with Gemini CLI Extensions](#using-toolbox-with-gemini-cli-extensions)
-- [Configuration](#configuration)
-  - [Sources](#sources)
-  - [Tools](#tools)
-  - [Toolsets](#toolsets)
-  - [Prompts](#prompts)
-- [Versioning](#versioning)
-- [Contributing](#contributing)
-- [Community](#community)
+- [MCP Toolbox for Databases](#mcp-toolbox-for-databases)
+  - [Why Toolbox?](#why-toolbox)
+  - [General Architecture](#general-architecture)
+  - [Getting Started](#getting-started)
+    - [Quickstart: Running Toolbox using NPX](#quickstart-running-toolbox-using-npx)
+    - [Installing the server](#installing-the-server)
+    - [Running the server](#running-the-server)
+    - [Integrating your application](#integrating-your-application)
+    - [Using Toolbox with Gemini CLI Extensions](#using-toolbox-with-gemini-cli-extensions)
+  - [Configuration](#configuration)
+    - [Sources](#sources)
+    - [Tools](#tools)
+    - [Toolsets](#toolsets)
+    - [Prompts](#prompts)
+  - [Versioning](#versioning)
+  - [Contributing](#contributing)
+  - [Telemetry](#telemetry)
+  - [Community](#community)
 
 <!-- /TOC -->
 
@@ -100,7 +103,7 @@ between agents and applications and update those tools without necessarily
 redeploying your application.
 
 <p align="center">
-<img src="./docs/en/getting-started/introduction/architecture.png" alt="architecture" width="50%"/>
+<img src="docs/en/documentation/introduction/architecture.png" alt="architecture" width="50%"/>
 </p>
 
 ## Getting Started
@@ -1038,6 +1041,12 @@ environment, see the [DEVELOPER](DEVELOPER.md) guide.
 Please note that this project is released with a Contributor Code of Conduct.
 By participating in this project you agree to abide by its terms. See
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md) for more information.
+
+## Telemetry
+
+Toolbox emits traces and metrics via OpenTelemetry. Use `--telemetry-otlp=<endpoint>` 
+to export to any OTLP-compatible backend like Google Cloud Monitoring, Agnost AI, or 
+others. See the [telemetry docs](https://googleapis.github.io/genai-toolbox/how-to/export_telemetry/) for details.
 
 ## Community
 
