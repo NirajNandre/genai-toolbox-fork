@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	bigqueryapi "cloud.google.com/go/bigquery"
+	"cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/genai-toolbox/internal/server"
 	"github.com/googleapis/genai-toolbox/internal/sources/cloudsqlmysql"
@@ -1088,7 +1088,7 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 
 		if strings.Contains(ds.DatasetID, uniqueID) {
 			t.Logf("INTEGRATION CLEANUP: Purging tables in dataset %s", ds.DatasetID)
-			
+
 			// Manually delete all tables as Dataset.Delete fails if the dataset is not empty
 			tableIt := ds.Tables(ctx)
 			for {
@@ -1114,4 +1114,3 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 		}
 	}
 }
-
