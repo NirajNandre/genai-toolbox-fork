@@ -1094,7 +1094,6 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 				t.Errorf("INTEGRATION CLEANUP: Failed to delete table %s: %v", table.TableID, err)
 			}
 		}
-
 		//delete empty dataset
 		if err := ds.Delete(ctx); err != nil {
 			t.Errorf("INTEGRATION CLEANUP: Failed to delete dataset %s: %v", id, err)
