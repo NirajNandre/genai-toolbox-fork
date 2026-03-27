@@ -1079,7 +1079,7 @@ func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery
 		t.Logf("INTEGRATION CLEANUP: Purging dataset %s", id)
 		ds := client.Dataset(id)
 
-		// Manually delete tables first since Dataset.Delete fails if not empty
+		//Delete tables first since Dataset.Delete fails if not empty
 		tableIt := ds.Tables(ctx)
 		for {
 			table, err := tableIt.Next()
