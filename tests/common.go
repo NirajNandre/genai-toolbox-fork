@@ -1074,43 +1074,32 @@ func CleanupMSSQLTables(t *testing.T, ctx context.Context, pool *sql.DB) {
 
 }
 
-func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery.Client, uniqueID string) {
-	it := client.Datasets(ctx)
-	for {
-		ds, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Errorf("INTEGRATION CLEANUP: Error listing datasets: %v", err)
-			return
-		}
+func CleanupBigQueryDatasets(t *testing.T, ctx context.Context, client *bigquery.Client, datasetIDs []string) {
+	for _, id := range datasetIDs {
+		t.Logf("INTEGRATION CLEANUP: Purging dataset %s", id)
+		ds := client.Dataset(id)
 
-		if strings.Contains(ds.DatasetID, uniqueID) {
-			t.Logf("INTEGRATION CLEANUP: Purging tables in dataset %s", ds.DatasetID)
-
-			// Manually delete all tables as Dataset.Delete fails if the dataset is not empty
-			tableIt := ds.Tables(ctx)
-			for {
-				table, err := tableIt.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Errorf("INTEGRATION CLEANUP: Failed to iterate tables in dataset %s: %v", ds.DatasetID, err)
-					break
-				}
-				if err := table.Delete(ctx); err != nil {
-					t.Errorf("INTEGRATION CLEANUP: Failed to delete table %s: %v", table.TableID, err)
-				}
+		// Manually delete tables first since Dataset.Delete fails if not empty
+		tableIt := ds.Tables(ctx)
+		for {
+			table, err := tableIt.Next()
+			if err == iterator.Done {
+				break
 			}
-
-			// Now that the dataset is empty, delete the dataset container
-			if err := ds.Delete(ctx); err != nil {
-				t.Errorf("INTEGRATION CLEANUP: Failed to delete dataset %s: %v", ds.DatasetID, err)
-			} else {
-				t.Logf("INTEGRATION CLEANUP SUCCESS: Wiped dataset %s", ds.DatasetID)
+			if err != nil {
+				t.Errorf("INTEGRATION CLEANUP: Failed to iterate tables in %s: %v", id, err)
+				break
 			}
+			if err := table.Delete(ctx); err != nil {
+				t.Errorf("INTEGRATION CLEANUP: Failed to delete table %s: %v", table.TableID, err)
+			}
+		}
+
+		//delete empty dataset
+		if err := ds.Delete(ctx); err != nil {
+			t.Errorf("INTEGRATION CLEANUP: Failed to delete dataset %s: %v", id, err)
+		} else {
+			t.Logf("INTEGRATION CLEANUP SUCCESS: Wiped dataset %s", id)
 		}
 	}
 }
