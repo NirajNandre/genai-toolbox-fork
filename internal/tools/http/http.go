@@ -52,7 +52,7 @@ type compatibleSource interface {
 	HttpDefaultHeaders() map[string]string
 	HttpBaseURL() string
 	HttpQueryParams() map[string]string
-	RunRequest(*http.Request) (any, error)
+	RunRequest(context.Context, *http.Request) (any, error)
 }
 
 type Config struct {
@@ -175,12 +175,26 @@ func getURL(baseURL, path string, pathParams, queryParams parameters.Parameters,
 		return "", fmt.Errorf("error replacing pathParams: %s", err)
 	}
 
+	baseParsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return "", fmt.Errorf("error parsing base URL: %s", err)
+	}
+	if baseParsedURL.Scheme == "" || baseParsedURL.Host == "" {
+		return "", fmt.Errorf("base URL must include scheme and host")
+	}
+
+	relativePath := templatedPath.String()
+	relParsedURL, err := url.Parse(relativePath)
+	if err != nil {
+		return "", fmt.Errorf("error parsing URL path: %s", err)
+	}
+	if relParsedURL.Scheme != "" || relParsedURL.Host != "" || relParsedURL.User != nil {
+		return "", fmt.Errorf("path must be relative and cannot override base host")
+	}
+
 	// Create URL based on BaseURL and Path
 	// Attach query parameters
-	parsedURL, err := url.Parse(baseURL + templatedPath.String())
-	if err != nil {
-		return "", fmt.Errorf("error parsing URL: %s", err)
-	}
+	parsedURL := baseParsedURL.ResolveReference(relParsedURL)
 
 	// Get existing query parameters from the URL
 	queryParameters := parsedURL.Query()
@@ -261,7 +275,7 @@ func (t Tool) Invoke(ctx context.Context, resourceMgr tools.SourceProvider, para
 		req.Header.Set(k, v)
 	}
 
-	resp, err := source.RunRequest(req)
+	resp, err := source.RunRequest(ctx, req)
 	if err != nil {
 		return nil, util.ProcessGeneralError(err)
 	}

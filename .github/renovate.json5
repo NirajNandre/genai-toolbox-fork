@@ -8,15 +8,35 @@
     ':prHourlyLimitNone',
     ':preserveSemverRanges',
   ],
-  minimumReleaseAge: '3',
+  minimumReleaseAge: '3 days',
   rebaseWhen: 'conflicted',
   dependencyDashboardLabels: [
     'type: process',
   ],
-  "postUpdateOptions": [
-    "gomodTidy"
+  postUpdateOptions: [
+    'gomodTidy',
+  ],
+  customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^\\.github/workflows/.*\\.ya?ml$/',
+      ],
+      matchStrings: [
+        'hugo-version:\\s*["\']?(?<currentValue>\\d+\\.\\d+\\.\\d+)["\']?',
+      ],
+      depNameTemplate: 'gohugoio/hugo',
+      datasourceTemplate: 'github-releases',
+      extractVersionTemplate: '^v?(?<version>.*)$',
+    },
   ],
   packageRules: [
+    {
+      groupName: 'Hugo',
+      matchPackageNames: [
+        'gohugoio/hugo',
+      ],
+    },
     {
       groupName: 'GitHub Actions',
       matchManagers: [
@@ -28,6 +48,20 @@
       groupName: 'Go',
       matchManagers: [
         'gomod',
+      ],
+      ignorePaths: [
+        'docs/**',
+        '.hugo/**',
+      ],
+    },
+    {
+      groupName: 'Go Samples',
+      matchManagers: [
+        'gomod',
+      ],
+      matchFileNames: [
+        'docs/**',
+        '.hugo/**',
       ],
     },
     {

@@ -23,6 +23,7 @@ import (
 
 	yaml "github.com/goccy/go-yaml"
 	"github.com/googleapis/genai-toolbox/internal/auth"
+	"github.com/googleapis/genai-toolbox/internal/auth/generic"
 	"github.com/googleapis/genai-toolbox/internal/auth/google"
 	"github.com/googleapis/genai-toolbox/internal/embeddingmodels"
 	"github.com/googleapis/genai-toolbox/internal/embeddingmodels/gemini"
@@ -69,12 +70,20 @@ type ServerConfig struct {
 	DisableReload bool
 	// UI indicates if Toolbox UI endpoints (/ui) are available.
 	UI bool
+	// EnableAPI indicates if the /api endpoint is enabled.
+	EnableAPI bool
+	// ToolboxUrl specifies the URL to advertise in the MCP PRM file as the resource field.
+	ToolboxUrl string
+	// McpPrmFile specifies the path to a manual Protected Resource Metadata (PRM) JSON file. If provided, overrides auto-generation.
+	McpPrmFile string
 	// Specifies a list of origins permitted to access this server.
 	AllowedOrigins []string
 	// Specifies a list of hosts permitted to access this server.
 	AllowedHosts []string
 	// UserAgentMetadata specifies additional metadata to append to the User-Agent string.
 	UserAgentMetadata []string
+	// PollInterval sets the polling frequency for configuration file updates.
+	PollInterval int
 }
 
 type logFormat string
@@ -169,7 +178,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 		delete(resource, "kind")
 
 		switch kind {
-		case "sources":
+		case "source":
 			c, err := UnmarshalYAMLSourceConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -178,7 +187,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 				sourceConfigs = make(SourceConfigs)
 			}
 			sourceConfigs[name] = c
-		case "authServices":
+		case "authService":
 			c, err := UnmarshalYAMLAuthServiceConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -187,7 +196,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 				authServiceConfigs = make(AuthServiceConfigs)
 			}
 			authServiceConfigs[name] = c
-		case "tools":
+		case "tool":
 			c, err := UnmarshalYAMLToolConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -196,7 +205,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 				toolConfigs = make(ToolConfigs)
 			}
 			toolConfigs[name] = c
-		case "toolsets":
+		case "toolset":
 			c, err := UnmarshalYAMLToolsetConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -205,7 +214,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 				toolsetConfigs = make(ToolsetConfigs)
 			}
 			toolsetConfigs[name] = c
-		case "embeddingModels":
+		case "embeddingModel":
 			c, err := UnmarshalYAMLEmbeddingModelConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -214,7 +223,7 @@ func UnmarshalResourceConfig(ctx context.Context, raw []byte) (SourceConfigs, Au
 				embeddingModelConfigs = make(EmbeddingModelConfigs)
 			}
 			embeddingModelConfigs[name] = c
-		case "prompts":
+		case "prompt":
 			c, err := UnmarshalYAMLPromptConfig(ctx, name, resource)
 			if err != nil {
 				return nil, nil, nil, nil, nil, nil, fmt.Errorf("error unmarshaling %s: %s", kind, err)
@@ -251,18 +260,27 @@ func UnmarshalYAMLAuthServiceConfig(ctx context.Context, name string, r map[stri
 	if !ok {
 		return nil, fmt.Errorf("missing 'type' field or it is not a string")
 	}
-	if resourceType != google.AuthServiceType {
-		return nil, fmt.Errorf("%s is not a valid type of auth service", resourceType)
-	}
 	dec, err := util.NewStrictDecoder(r)
 	if err != nil {
 		return nil, fmt.Errorf("error creating decoder: %s", err)
 	}
-	actual := google.Config{Name: name}
-	if err := dec.DecodeContext(ctx, &actual); err != nil {
-		return nil, fmt.Errorf("unable to parse as %s: %w", name, err)
+
+	switch resourceType {
+	case google.AuthServiceType:
+		actual := google.Config{Name: name}
+		if err := dec.DecodeContext(ctx, &actual); err != nil {
+			return nil, fmt.Errorf("unable to parse as %s: %w", name, err)
+		}
+		return actual, nil
+	case generic.AuthServiceType:
+		actual := generic.Config{Name: name}
+		if err := dec.DecodeContext(ctx, &actual); err != nil {
+			return nil, fmt.Errorf("unable to parse as %s: %w", name, err)
+		}
+		return actual, nil
+	default:
+		return nil, fmt.Errorf("%s is not a valid type of auth service", resourceType)
 	}
-	return actual, nil
 }
 
 func UnmarshalYAMLEmbeddingModelConfig(ctx context.Context, name string, r map[string]any) (embeddingmodels.EmbeddingModelConfig, error) {
