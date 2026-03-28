@@ -64,14 +64,31 @@ type TestRow struct {
 
 func TestBigtableToolEndpoints(t *testing.T) {
 	sourceConfig := getBigtableVars(t)
+
+	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
+	t.Logf("Starting Bigtable test with uniqueID: %s", uniqueID)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	var args []string
 
-	tableName := "param_table" + strings.ReplaceAll(uuid.New().String(), "-", "")
-	tableNameAuth := "auth_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
-	tableNameTemplateParam := "tmpl_param_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
+	// Initialize AdminClient to create or delete tables
+	adminClient, err := bigtable.NewAdminClient(ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string))
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	// This will purge every table containing the uniqueID.
+	t.Cleanup(func() {
+		t.Logf("Running global cleanup for uniqueID: %s", uniqueID)
+		tests.CleanupBigtableTables(t, context.Background(), adminClient, uniqueID)
+	})
+
+	tableName := "param_table" + uniqueID
+	tableNameAuth := "auth_table_" + uniqueID
+	tableNameTemplateParam := "tmpl_param_table_" + uniqueID
 
 	columnFamilyName := "cf"
 	muts, rowKeys := getTestData(columnFamilyName)
@@ -85,18 +102,15 @@ func TestBigtableToolEndpoints(t *testing.T) {
 		"SELECT TO_INT64(cf['id']) AS id, CAST(cf['name'] AS string) AS name FROM %s WHERE TO_INT64(cf['id']) IN UNNEST(@idArray) AND CAST(cf['name'] AS string) IN UNNEST(@nameArray);",
 		tableName,
 	)
-	teardownTable1 := setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableName, columnFamilyName, muts, rowKeys)
-	defer teardownTable1(t)
+	setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableName, columnFamilyName, muts, rowKeys)
 
 	// Do not change the shape of statement without checking tests/common_test.go.
 	// The structure and value of seed data has to match https://github.com/googleapis/genai-toolbox/blob/4dba0df12dc438eca3cb476ef52aa17cdf232c12/tests/common_test.go#L200-L251
 	authToolStatement := fmt.Sprintf("SELECT CAST(cf['name'] AS string) as name FROM %s WHERE CAST(cf['email'] AS string) = @email;", tableNameAuth)
-	teardownTable2 := setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableNameAuth, columnFamilyName, muts, rowKeys)
-	defer teardownTable2(t)
+	setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableNameAuth, columnFamilyName, muts, rowKeys)
 
 	mutsTmpl, rowKeysTmpl := getTestDataTemplateParam(columnFamilyName)
-	teardownTableTmpl := setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableNameTemplateParam, columnFamilyName, mutsTmpl, rowKeysTmpl)
-	defer teardownTableTmpl(t)
+	setupBtTable(t, ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string), tableNameTemplateParam, columnFamilyName, mutsTmpl, rowKeysTmpl)
 
 	// Write config into a file and pass it to command
 	toolsFile := tests.GetToolsConfig(sourceConfig, BigtableToolType, paramTestStatement, idParamTestStatement, nameParamTestStatement, arrayTestStatement, authToolStatement)
