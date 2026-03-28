@@ -240,12 +240,7 @@ func getTestDataTemplateParam(columnFamilyName string) ([]*bigtable.Mutation, []
 }
 
 func setupBtTable(t *testing.T, ctx context.Context, projectId string, instance string, tableName string, columnFamilyName string, muts []*bigtable.Mutation, rowKeys []string) func(*testing.T) {
-	// Creating clients
-	adminClient, err := bigtable.NewAdminClient(ctx, projectId, instance)
-	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
-	}
-
+	
 	client, err := bigtable.NewClient(ctx, projectId, instance)
 	if err != nil {
 		log.Fatalf("Could not create data operations client: %v", err)
@@ -287,15 +282,6 @@ func setupBtTable(t *testing.T, ctx context.Context, projectId string, instance 
 			log.Printf("Error writing row: %v", rowErr)
 		}
 		log.Fatalf("Could not write some rows")
-	}
-
-	// Writing data
-	return func(t *testing.T) {
-		// tear down test
-		if err = adminClient.DeleteTable(ctx, tableName); err != nil {
-			log.Fatalf("Teardown failed. Could not delete table %s: %v", tableName, err)
-		}
-		defer adminClient.Close()
 	}
 }
 
