@@ -68,23 +68,26 @@ func TestBigtableToolEndpoints(t *testing.T) {
 	uniqueID := strings.ReplaceAll(uuid.New().String(), "-", "")
 	t.Logf("Starting Bigtable test with uniqueID: %s", uniqueID)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Minute)
-	defer cancel()
-
 	var args []string
 
 	// Initialize AdminClient to create or delete tables
-	adminClient, err := bigtable.NewAdminClient(ctx, sourceConfig["project"].(string), sourceConfig["instance"].(string))
+	adminClient, err := bigtable.NewAdminClient(context.Background(), sourceConfig["project"].(string), sourceConfig["instance"].(string))
 	if err != nil {
 		t.Fatalf("Failed to create AdminClient: %v", err)
 	}
-	defer adminClient.Close()
-
-	// This will purge every table containing the uniqueID.
+	
+	t.Cleanup(func() { 
+		adminClient.Close()
+	})
+	
 	t.Cleanup(func() {
 		t.Logf("Running global cleanup for uniqueID: %s", uniqueID)
 		tests.CleanupBigtableTables(t, context.Background(), adminClient, uniqueID)
 	})
+
+
+	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Minute)
+	defer cancel()
 
 	tableName := "param_table" + uniqueID
 	tableNameAuth := "auth_table_" + uniqueID
