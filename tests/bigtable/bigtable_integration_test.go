@@ -79,7 +79,7 @@ func TestBigtableToolEndpoints(t *testing.T) {
 	t.Cleanup(func() { 
 		adminClient.Close()
 	})
-	
+
 	t.Cleanup(func() {
 		t.Logf("Running global cleanup for uniqueID: %s", uniqueID)
 		tests.CleanupBigtableTables(t, context.Background(), adminClient, uniqueID)
@@ -89,7 +89,7 @@ func TestBigtableToolEndpoints(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Minute)
 	defer cancel()
 
-	tableName := "param_table" + uniqueID
+	tableName := "param_table_" + uniqueID
 	tableNameAuth := "auth_table_" + uniqueID
 	tableNameTemplateParam := "tmpl_param_table_" + uniqueID
 
