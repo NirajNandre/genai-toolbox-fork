@@ -75,8 +75,8 @@ func TestBigtableToolEndpoints(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create AdminClient: %v", err)
 	}
-	
-	t.Cleanup(func() { 
+
+	t.Cleanup(func() {
 		adminClient.Close()
 	})
 
@@ -84,7 +84,6 @@ func TestBigtableToolEndpoints(t *testing.T) {
 		t.Logf("Running global cleanup for uniqueID: %s", uniqueID)
 		tests.CleanupBigtableTables(t, context.Background(), adminClient, uniqueID)
 	})
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Minute)
 	defer cancel()
