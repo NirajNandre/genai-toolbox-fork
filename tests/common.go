@@ -1143,7 +1143,7 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 	if err := gIter.Do(func(row *spanner.Row) error {
 		var name string
 		if err := row.Column(0, &name); err == nil {
-			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP PROPERTY GRAPH `%s` ", name))
+			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP PROPERTY GRAPH IF EXISTS %s", name))
 		}
 		return nil
 	}); err != nil {
@@ -1151,7 +1151,7 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 	}
 
 	//Identify Tables
-	tableQuery := `SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '' AND table_name LIKE @pattern`
+	tableQuery := `SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '' AND table_name LIKE @pattern ORDER BY PARENT_TABLE_NAME DESC`
 	tIter := dataClient.Single().Query(ctx, spanner.Statement{
 		SQL:    tableQuery,
 		Params: map[string]any{"pattern": pattern},
@@ -1159,7 +1159,7 @@ func CleanupSpannerResources(t *testing.T, ctx context.Context, adminClient *dat
 	if err := tIter.Do(func(row *spanner.Row) error {
 		var name string
 		if err := row.Column(0, &name); err == nil {
-			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP TABLE `%s` ", name))
+			ddlStatements = append(ddlStatements, fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
 		}
 		return nil
 	}); err != nil {
